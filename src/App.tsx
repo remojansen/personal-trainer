@@ -1,17 +1,32 @@
+import { Route, Routes } from 'react-router-dom';
+import { Layout } from './components/Layout';
+import { useUserData } from './hooks/useUserData';
+import { HomePage } from './pages/HomePage';
+import { RegistrationPage } from './pages/RegistrationPage';
+import { SettingsPage } from './pages/SettingsPage';
+
 function App() {
-	return (
-		<div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-			<div className="text-center">
-				<h1 className="text-5xl font-bold text-white mb-4">Race Buddy</h1>
-				<p className="text-xl text-white/80">Your racing companion app</p>
-				<button
-					type="button"
-					className="mt-8 px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow-lg hover:bg-blue-50 transition-colors"
-				>
-					Get Started
-				</button>
+	const { isLoading, isRegistered } = useUserData();
+
+	if (isLoading) {
+		return (
+			<div className="min-h-screen bg-gray-100 flex items-center justify-center">
+				<div className="text-gray-600">Loading...</div>
 			</div>
-		</div>
+		);
+	}
+
+	if (!isRegistered) {
+		return <RegistrationPage />;
+	}
+
+	return (
+		<Layout>
+			<Routes>
+				<Route path="/" element={<HomePage />} />
+				<Route path="/settings" element={<SettingsPage />} />
+			</Routes>
+		</Layout>
 	);
 }
 
