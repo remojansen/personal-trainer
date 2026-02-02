@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { IoMdSettings } from 'react-icons/io';
+import { Schedule } from '../components/Schedule';
 import { UserProfileForm } from '../components/UserProfileForm';
+import type { Schedule as ScheduleType } from '../hooks/useUserData';
 import { useUserData } from '../hooks/useUserData';
 
 export function SettingsPage() {
@@ -33,6 +35,13 @@ export function SettingsPage() {
 		}
 	};
 
+	const handleScheduleChange = (newSchedule: ScheduleType) => {
+		setUserProfile({
+			...userProfile,
+			schedule: newSchedule,
+		});
+	};
+
 	return (
 		<div className="min-h-screen bg-gray-900 py-8">
 			<div className="max-w-3xl mx-auto px-4">
@@ -49,6 +58,16 @@ export function SettingsPage() {
 						onChange={setUserProfile}
 						weightKg={weightKg}
 						onWeightChange={handleWeightChange}
+					/>
+				</div>
+
+				<div className="bg-gray-800 rounded-lg shadow p-6 mt-6">
+					<h2 className="text-xl font-semibold text-white mb-4">
+						Training Schedule
+					</h2>
+					<Schedule
+						schedule={userProfile.schedule}
+						onChange={handleScheduleChange}
 					/>
 				</div>
 			</div>

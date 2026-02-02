@@ -3,6 +3,7 @@ import {
 	CartesianGrid,
 	Line,
 	LineChart,
+	ReferenceLine,
 	ResponsiveContainer,
 	Tooltip,
 	XAxis,
@@ -182,7 +183,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
 	);
 }
 
-export function StatsChart() {
+export function WeightEvolutionPanel() {
 	const { statsEntries, userProfile, isLoading, addStatsEntry } = useUserData();
 	const [showReminderModal, setShowReminderModal] = useState(false);
 	const [showLogWeightModal, setShowLogWeightModal] = useState(false);
@@ -299,6 +300,12 @@ export function StatsChart() {
 			})
 			.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 	}, [statsEntries, userProfile]);
+
+	const weightAxisMax = useMemo(() => {
+		if (chartData.length === 0) return 100;
+		const maxWeight = Math.max(...chartData.map((d) => d.weightKg));
+		return maxWeight + 10;
+	}, [chartData]);
 
 	if (isLoading) {
 		return (
@@ -537,6 +544,7 @@ export function StatsChart() {
 								tick={{ fill: '#9ca3af', fontSize: 12 }}
 								tickLine={{ stroke: '#4b5563' }}
 								axisLine={{ stroke: '#4b5563' }}
+								domain={[45, weightAxisMax]}
 								label={{
 									value: 'Weight (kg)',
 									angle: -90,
@@ -561,6 +569,21 @@ export function StatsChart() {
 									}}
 								/>
 							<Tooltip content={<CustomTooltip />} />
+							{userProfile.targetWeightKg !== null && (
+								<ReferenceLine
+									yAxisId="weight"
+									y={userProfile.targetWeightKg}
+									stroke="#22c55e"
+									strokeWidth={2}
+									strokeDasharray="8 4"
+									label={{
+										value: `Target: ${userProfile.targetWeightKg} kg`,
+										fill: '#22c55e',
+										fontSize: 12,
+										position: 'right',
+									}}
+								/>
+							)}
 							<Line
 								yAxisId="weight"
 								type="monotone"

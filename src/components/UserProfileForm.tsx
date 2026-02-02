@@ -66,6 +66,52 @@ export function UserProfileForm({
 
 			<div>
 				<label
+					htmlFor="targetWeightKg"
+					className="block text-sm font-medium text-gray-300 mb-2"
+				>
+					Target Weight (kg)
+				</label>
+				<input
+					type="number"
+					id="targetWeightKg"
+					value={userProfile.targetWeightKg ?? ''}
+					onChange={(e) =>
+						onChange({
+							...userProfile,
+							targetWeightKg: e.target.value ? Number(e.target.value) : null,
+						})
+					}
+					className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white placeholder-gray-400"
+					placeholder="65"
+					min="20"
+					max="300"
+					step="0.1"
+				/>
+			</div>
+
+			<div>
+				<label
+					htmlFor="targetDate"
+					className="block text-sm font-medium text-gray-300 mb-2"
+				>
+					Target Date
+				</label>
+				<input
+					type="date"
+					id="targetDate"
+					value={userProfile.targetDate ?? ''}
+					onChange={(e) =>
+						onChange({
+							...userProfile,
+							targetDate: e.target.value || null,
+						})
+					}
+					className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white"
+				/>
+			</div>
+
+			<div>
+				<label
 					htmlFor="dateOfBirth"
 					className="block text-sm font-medium text-gray-300 mb-2"
 				>

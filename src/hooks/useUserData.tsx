@@ -28,16 +28,43 @@ export interface UserProfile {
 	heightCm: number | null;
 	dateOfBirth: string | null;
 	sex: 'male' | 'female' | null;
+	targetWeightKg: number | null;
+	targetDate: string | null;
+	schedule: Schedule;
+}
+
+export const ActivityType = {
+	RoadRun: 'RoadRun',
+	TreadmillRun: 'TreadmillRun',
+	PoolSwim: 'PoolSwim',
+	SeaSwim: 'SeaSwim',
+	RoadCycle: 'RoadCycle',
+	IndoorCycle: 'IndoorCycle',
+	StrengthTrainingLegs: 'StrengthTrainingLegs',
+	StrengthTrainingArms: 'StrengthTrainingArms',
+	StrengthTrainingCore: 'StrengthTrainingCore',
+	StrengthTrainingShoulders: 'StrengthTrainingShoulders',
+	StrengthTrainingBack: 'StrengthTrainingBack'
+} as const;
+
+export type ActivityTypeKey = typeof ActivityType[keyof typeof ActivityType];
+
+export interface Schedule {
+	monday: ActivityTypeKey[];
+	tuesday: ActivityTypeKey[];
+	wednesday: ActivityTypeKey[];
+	thursday: ActivityTypeKey[];
+	friday: ActivityTypeKey[];
+	saturday: ActivityTypeKey[];
+	sunday: ActivityTypeKey[];
 }
 
 export interface Activity {
 	id: string;
-	type: 'run' | 'race' | 'training';
-	name: string;
+	type: ActivityTypeKey;
 	date: string;
-	distance: number;
-	duration: number;
-	pace: number;
+	distanceInKm: number;
+	durationInSeconds: number;
 }
 
 export interface UserStatsEntry {
@@ -77,10 +104,23 @@ interface UserData {
 	deleteStatsEntry: (id: string) => Promise<void>;
 }
 
+const DEFAULT_SCHEDULE: Schedule = {
+	monday: [],
+	tuesday: [],
+	wednesday: [],
+	thursday: [],
+	friday: [],
+	saturday: [],
+	sunday: [],
+};
+
 const DEFAULT_USER_PROFILE: UserProfile = {
 	heightCm: null,
 	dateOfBirth: null,
 	sex: null,
+	targetWeightKg: null,
+	targetDate: null,
+	schedule: DEFAULT_SCHEDULE,
 };
 
 const ACTIVITIES_PAGE_SIZE = 50;
