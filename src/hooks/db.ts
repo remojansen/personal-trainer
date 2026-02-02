@@ -1,7 +1,7 @@
 import { type DBSchema, type IDBPDatabase, openDB } from 'idb';
-import type { Activity, Stats, UserProfile } from './useUserData';
+import type { Activity, UserProfile, UserStatsEntry } from './useUserData';
 
-interface RaceBuddyDB extends DBSchema {
+interface PersonalTrainerDB extends DBSchema {
 	userProfile: {
 		key: 'user';
 		value: UserProfile;
@@ -14,21 +14,24 @@ interface RaceBuddyDB extends DBSchema {
 			'by-type': string;
 		};
 	};
-	stats: {
-		key: 'user';
-		value: Stats;
+	statsEntries: {
+		key: string;
+		value: UserStatsEntry;
+		indexes: {
+			'by-date': string;
+		};
 	};
 }
 
-const DB_NAME = 'race-buddy-db';
-const DB_VERSION = 1;
+const DB_NAME = 'personal-trainer-db';
+const DB_VERSION = 2;
 
-let dbInstance: IDBPDatabase<RaceBuddyDB> | null = null;
+let dbInstance: IDBPDatabase<PersonalTrainerDB> | null = null;
 
-export async function getDB(): Promise<IDBPDatabase<RaceBuddyDB>> {
+export async function getDB(): Promise<IDBPDatabase<PersonalTrainerDB>> {
 	if (dbInstance) return dbInstance;
 
-	dbInstance = await openDB<RaceBuddyDB>(DB_NAME, DB_VERSION, {
+	dbInstance = await openDB<PersonalTrainerDB>(DB_NAME, DB_VERSION, {
 		upgrade(db) {
 			// User Profile store
 			if (!db.objectStoreNames.contains('userProfile')) {
@@ -44,9 +47,17 @@ export async function getDB(): Promise<IDBPDatabase<RaceBuddyDB>> {
 				activityStore.createIndex('by-type', 'type');
 			}
 
-			// Stats store
-			if (!db.objectStoreNames.contains('stats')) {
-				db.createObjectStore('stats');
+			// Stats entries store with date index
+			if (!db.objectStoreNames.contains('statsEntries')) {
+				const statsEntriesStore = db.createObjectStore('statsEntries', {
+					keyPath: 'id',
+				});
+				statsEntriesStore.createIndex('by-date', 'date');
+			}
+
+			// Remove old stats store if it exists (migration from v1)
+			if ((db.objectStoreNames as DOMStringList).contains('stats')) {
+				db.deleteObjectStore('stats' as 'statsEntries');
 			}
 		},
 	});
@@ -65,15 +76,78 @@ export async function saveUserProfile(userProfile: UserProfile): Promise<void> {
 	await db.put('userProfile', userProfile, 'user');
 }
 
-// Stats operations
-export async function loadStats(): Promise<Stats | undefined> {
+// Stats entry operations - designed for large datasets
+export async function loadStatsEntries(
+	limit?: number,
+	offset = 0,
+): Promise<UserStatsEntry[]> {
 	const db = await getDB();
-	return db.get('stats', 'user');
+	const tx = db.transaction('statsEntries', 'readonly');
+	const index = tx.store.index('by-date');
+
+	const entries: UserStatsEntry[] = [];
+	let cursor = await index.openCursor(null, 'prev'); // newest first
+	let skipped = 0;
+
+	while (cursor) {
+		if (skipped < offset) {
+			skipped++;
+			cursor = await cursor.continue();
+			continue;
+		}
+
+		entries.push(cursor.value);
+
+		if (limit && entries.length >= limit) {
+			break;
+		}
+
+		cursor = await cursor.continue();
+	}
+
+	return entries;
 }
 
-export async function saveStats(stats: Stats): Promise<void> {
+export async function loadAllStatsEntries(): Promise<UserStatsEntry[]> {
 	const db = await getDB();
-	await db.put('stats', stats, 'user');
+	return db.getAllFromIndex('statsEntries', 'by-date');
+}
+
+export async function getStatsEntryCount(): Promise<number> {
+	const db = await getDB();
+	return db.count('statsEntries');
+}
+
+export async function loadStatsEntryById(
+	id: string,
+): Promise<UserStatsEntry | undefined> {
+	const db = await getDB();
+	return db.get('statsEntries', id);
+}
+
+export async function loadStatsEntryByDate(
+	date: string,
+): Promise<UserStatsEntry | undefined> {
+	const db = await getDB();
+	return db.getFromIndex('statsEntries', 'by-date', date);
+}
+
+export async function saveStatsEntry(entry: UserStatsEntry): Promise<void> {
+	const db = await getDB();
+	await db.put('statsEntries', entry);
+}
+
+export async function saveStatsEntries(
+	entries: UserStatsEntry[],
+): Promise<void> {
+	const db = await getDB();
+	const tx = db.transaction('statsEntries', 'readwrite');
+	await Promise.all([...entries.map((entry) => tx.store.put(entry)), tx.done]);
+}
+
+export async function deleteStatsEntry(id: string): Promise<void> {
+	const db = await getDB();
+	await db.delete('statsEntries', id);
 }
 
 // Activity operations - designed for large datasets

@@ -1,13 +1,18 @@
 import type { UserProfile } from '../hooks/useUserData';
+import { Button } from './Button';
 
 interface UserProfileFormProps {
 	userProfile: UserProfile;
 	onChange: (userProfile: UserProfile) => void;
+	weightKg?: number | null;
+	onWeightChange?: (weightKg: number | null) => void;
 }
 
 export function UserProfileForm({
 	userProfile,
 	onChange,
+	weightKg,
+	onWeightChange,
 }: UserProfileFormProps) {
 	return (
 		<div className="space-y-6">
@@ -35,30 +40,29 @@ export function UserProfileForm({
 				/>
 			</div>
 
-			<div>
-				<label
-					htmlFor="weightKg"
-					className="block text-sm font-medium text-gray-300 mb-2"
-				>
-					Weight (kg)
-				</label>
-				<input
-					type="number"
-					id="weightKg"
-					value={userProfile.weightKg ?? ''}
-					onChange={(e) =>
-						onChange({
-							...userProfile,
-							weightKg: e.target.value ? Number(e.target.value) : null,
-						})
-					}
-					className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white placeholder-gray-400"
-					placeholder="70"
-					min="20"
-					max="300"
-					step="0.1"
-				/>
-			</div>
+			{onWeightChange !== undefined && (
+				<div>
+					<label
+						htmlFor="weightKg"
+						className="block text-sm font-medium text-gray-300 mb-2"
+					>
+						Weight (kg) - {new Date().toLocaleDateString('en-GB')}
+					</label>
+					<input
+						type="number"
+						id="weightKg"
+						value={weightKg ?? ''}
+						onChange={(e) =>
+							onWeightChange(e.target.value ? Number(e.target.value) : null)
+						}
+						className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white placeholder-gray-400"
+						placeholder="70"
+						min="20"
+						max="300"
+						step="0.1"
+					/>
+				</div>
+			)}
 
 			<div>
 				<label
@@ -86,28 +90,24 @@ export function UserProfileForm({
 					Sex
 				</span>
 				<div className="flex gap-4">
-					<button
-						type="button"
+					<Button
+						color="purple"
+						size="md"
+						active={userProfile.sex === 'male'}
 						onClick={() => onChange({ ...userProfile, sex: 'male' })}
-						className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
-							userProfile.sex === 'male'
-								? 'bg-purple-600 text-white'
-								: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-						}`}
+						className="flex-1"
 					>
 						Male
-					</button>
-					<button
-						type="button"
+					</Button>
+					<Button
+						color="purple"
+						size="md"
+						active={userProfile.sex === 'female'}
 						onClick={() => onChange({ ...userProfile, sex: 'female' })}
-						className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
-							userProfile.sex === 'female'
-								? 'bg-purple-600 text-white'
-								: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-						}`}
+						className="flex-1"
 					>
 						Female
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>

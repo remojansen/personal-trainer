@@ -1,23 +1,31 @@
 import { useState } from 'react';
-import { FaRunning } from 'react-icons/fa';
+import { Button } from '../components/Button';
 import { UserProfileForm } from '../components/UserProfileForm';
 import { type UserProfile, useUserData } from '../hooks/useUserData';
 
 export function RegistrationPage() {
-	const { userProfile, setUserProfile } = useUserData();
+	const { userProfile, setUserProfile, addStatsEntry } = useUserData();
 	const [localUserProfile, setLocalUserProfile] =
 		useState<UserProfile>(userProfile);
+	const [weightKg, setWeightKg] = useState<number | null>(null);
 
 	const isFormComplete =
 		localUserProfile.heightCm !== null &&
-		localUserProfile.weightKg !== null &&
 		localUserProfile.dateOfBirth !== null &&
-		localUserProfile.sex !== null;
+		localUserProfile.sex !== null &&
+		weightKg !== null;
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (isFormComplete) {
+		if (isFormComplete && weightKg !== null) {
 			setUserProfile(localUserProfile);
+			// Create initial stats entry with the weight
+			await addStatsEntry({
+				id: crypto.randomUUID(),
+				date: new Date().toISOString().split('T')[0],
+				weightKg,
+				bodyFatPercentage: null,
+			});
 		}
 	};
 
@@ -26,10 +34,10 @@ export function RegistrationPage() {
 			<div className="bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md">
 				<div className="text-center mb-8">
 					<div className="inline-flex items-center justify-center w-16 h-16 bg-purple-900 rounded-full mb-4">
-						<FaRunning className="text-3xl text-purple-400" />
+						<span className="text-3xl">💪</span>
 					</div>
 					<h1 className="text-3xl font-bold text-white mb-2">
-						Welcome to Race Buddy
+						Welcome to Personal Trainer
 					</h1>
 					<p className="text-gray-400">
 						Let's set up your profile to get started
@@ -40,19 +48,21 @@ export function RegistrationPage() {
 					<UserProfileForm
 						userProfile={localUserProfile}
 						onChange={setLocalUserProfile}
+						weightKg={weightKg}
+						onWeightChange={setWeightKg}
 					/>
 
-					<button
+					<Button
 						type="submit"
+						variant="primary"
+						color="purple"
+						size="lg"
+						fullWidth
 						disabled={!isFormComplete}
-						className={`w-full mt-8 py-4 rounded-lg font-semibold text-lg transition-colors ${
-							isFormComplete
-								? 'bg-purple-600 text-white hover:bg-purple-700'
-								: 'bg-gray-700 text-gray-500 cursor-not-allowed'
-						}`}
+						className="mt-8"
 					>
 						Get Started
-					</button>
+					</Button>
 				</form>
 			</div>
 		</div>

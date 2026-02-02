@@ -1,9 +1,37 @@
+import { useEffect, useState } from 'react';
 import { IoMdSettings } from 'react-icons/io';
 import { UserProfileForm } from '../components/UserProfileForm';
 import { useUserData } from '../hooks/useUserData';
 
 export function SettingsPage() {
-	const { userProfile, setUserProfile } = useUserData();
+	const { userProfile, setUserProfile, statsEntries, addStatsEntry } =
+		useUserData();
+
+	// Get the most recent weight from stats entries
+	const latestWeight =
+		statsEntries.length > 0 ? statsEntries[0].weightKg : null;
+	const [weightKg, setWeightKg] = useState<number | null>(latestWeight);
+
+	// Sync local weight state when stats entries load
+	useEffect(() => {
+		if (statsEntries.length > 0) {
+			setWeightKg(statsEntries[0].weightKg);
+		}
+	}, [statsEntries]);
+
+	const handleWeightChange = async (newWeight: number | null) => {
+		setWeightKg(newWeight);
+		if (newWeight !== null) {
+			// Add a new stats entry with the updated weight
+			await addStatsEntry({
+				id: crypto.randomUUID(),
+				date: new Date().toISOString().split('T')[0],
+				weightKg: newWeight,
+				bodyFatPercentage:
+					statsEntries.length > 0 ? statsEntries[0].bodyFatPercentage : null,
+			});
+		}
+	};
 
 	return (
 		<div className="min-h-screen bg-gray-900 py-8">
@@ -19,6 +47,8 @@ export function SettingsPage() {
 					<UserProfileForm
 						userProfile={userProfile}
 						onChange={setUserProfile}
+						weightKg={weightKg}
+						onWeightChange={handleWeightChange}
 					/>
 				</div>
 			</div>

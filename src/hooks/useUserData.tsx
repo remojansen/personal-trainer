@@ -8,21 +8,25 @@ import {
 } from 'react';
 import {
 	deleteActivity as deleteActivityFromDB,
+	deleteStatsEntry as deleteStatsEntryFromDB,
 	getActivityCount,
+	getStatsEntryCount,
 	loadActivities,
 	loadAllActivities,
-	loadStats,
+	loadAllStatsEntries,
+	loadStatsEntries,
+	loadStatsEntryByDate,
 	loadUserProfile,
 	saveActivities,
 	saveActivity,
-	saveStats,
+	saveStatsEntries,
+	saveStatsEntry,
 	saveUserProfile,
 } from './db';
 
 export interface UserProfile {
 	heightCm: number | null;
 	dateOfBirth: string | null;
-	weightKg: number | null;
 	sex: 'male' | 'female' | null;
 }
 
@@ -36,12 +40,11 @@ export interface Activity {
 	pace: number;
 }
 
-export interface Stats {
-	totalDistance: number;
-	totalRaces: number;
-	totalActivities: number;
-	averagePace: number;
-	personalBest: number | null;
+export interface UserStatsEntry {
+	id: string;
+	date: string;
+	weightKg: number;
+	bodyFatPercentage: number | null;
 }
 
 interface UserData {
@@ -64,27 +67,24 @@ interface UserData {
 	updateActivities: (activities: Activity[]) => Promise<void>;
 	deleteActivity: (id: string) => Promise<void>;
 
-	// Stats
-	stats: Stats;
-	setStats: (stats: Stats) => void;
+	// Stats entries - paginated for large datasets
+	statsEntries: UserStatsEntry[];
+	statsEntryCount: number;
+	loadMoreStatsEntries: (limit?: number) => Promise<void>;
+	loadAllUserStatsEntries: () => Promise<UserStatsEntry[]>;
+	addStatsEntry: (entry: UserStatsEntry) => Promise<void>;
+	updateStatsEntries: (entries: UserStatsEntry[]) => Promise<void>;
+	deleteStatsEntry: (id: string) => Promise<void>;
 }
 
 const DEFAULT_USER_PROFILE: UserProfile = {
 	heightCm: null,
 	dateOfBirth: null,
-	weightKg: null,
 	sex: null,
 };
 
-const DEFAULT_STATS: Stats = {
-	totalDistance: 0,
-	totalRaces: 0,
-	totalActivities: 0,
-	averagePace: 0,
-	personalBest: null,
-};
-
 const ACTIVITIES_PAGE_SIZE = 50;
+const STATS_ENTRIES_PAGE_SIZE = 50;
 
 const UserDataContext = createContext<UserData | undefined>(undefined);
 
@@ -99,13 +99,13 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 		useState<UserProfile>(DEFAULT_USER_PROFILE);
 	const [activities, setActivitiesState] = useState<Activity[]>([]);
 	const [activityCount, setActivityCount] = useState(0);
-	const [stats, setStatsState] = useState<Stats>(DEFAULT_STATS);
+	const [statsEntries, setStatsEntriesState] = useState<UserStatsEntry[]>([]);
+	const [statsEntryCount, setStatsEntryCount] = useState(0);
 
 	// Check if user has completed registration (has profile data)
 	const checkIsRegistered = useCallback((profile: UserProfile) => {
 		return (
 			profile.heightCm !== null &&
-			profile.weightKg !== null &&
 			profile.dateOfBirth !== null &&
 			profile.sex !== null
 		);
@@ -115,21 +115,28 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 	useEffect(() => {
 		async function loadInitialData() {
 			try {
-				const [savedUserProfile, savedStats, initialActivities, count] =
-					await Promise.all([
-						loadUserProfile(),
-						loadStats(),
-						loadActivities(ACTIVITIES_PAGE_SIZE, 0),
-						getActivityCount(),
-					]);
+				const [
+					savedUserProfile,
+					initialActivities,
+					activityCountResult,
+					initialStatsEntries,
+					statsEntryCountResult,
+				] = await Promise.all([
+					loadUserProfile(),
+					loadActivities(ACTIVITIES_PAGE_SIZE, 0),
+					getActivityCount(),
+					loadStatsEntries(STATS_ENTRIES_PAGE_SIZE, 0),
+					getStatsEntryCount(),
+				]);
 
 				if (savedUserProfile) {
 					setUserProfileState(savedUserProfile);
 					setIsRegistered(checkIsRegistered(savedUserProfile));
 				}
-				if (savedStats) setStatsState(savedStats);
 				setActivitiesState(initialActivities);
-				setActivityCount(count);
+				setActivityCount(activityCountResult);
+				setStatsEntriesState(initialStatsEntries);
+				setStatsEntryCount(statsEntryCountResult);
 			} catch (error) {
 				console.error('Failed to load data from IndexedDB:', error);
 			} finally {
@@ -152,12 +159,57 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 		[checkIsRegistered],
 	);
 
-	// Stats - persist to IndexedDB
-	const setStats = useCallback((newStats: Stats) => {
-		setStatsState(newStats);
-		saveStats(newStats).catch((error) => {
-			console.error('Failed to save stats:', error);
-		});
+	// Load more stats entries (pagination)
+	const loadMoreStatsEntries = useCallback(
+		async (limit = STATS_ENTRIES_PAGE_SIZE) => {
+			const moreEntries = await loadStatsEntries(limit, statsEntries.length);
+			setStatsEntriesState((prev) => [...prev, ...moreEntries]);
+		},
+		[statsEntries.length],
+	);
+
+	// Load all stats entries (use sparingly for large datasets)
+	const loadAllUserStatsEntries = useCallback(async () => {
+		return loadAllStatsEntries();
+	}, []);
+
+	// Add single stats entry (or update if entry for date already exists)
+	const addStatsEntry = useCallback(async (entry: UserStatsEntry) => {
+		const existingEntry = await loadStatsEntryByDate(entry.date);
+		if (existingEntry) {
+			// Update existing entry, keeping the original id
+			const updatedEntry = { ...entry, id: existingEntry.id };
+			await saveStatsEntry(updatedEntry);
+			setStatsEntriesState((prev) =>
+				prev.map((e) => (e.id === existingEntry.id ? updatedEntry : e)),
+			);
+		} else {
+			await saveStatsEntry(entry);
+			setStatsEntriesState((prev) => [entry, ...prev]); // newest first
+			setStatsEntryCount((prev) => prev + 1);
+		}
+	}, []);
+
+	// Bulk update stats entries
+	const updateStatsEntries = useCallback(
+		async (newEntries: UserStatsEntry[]) => {
+			await saveStatsEntries(newEntries);
+			// Reload entries to ensure consistency
+			const [reloadedEntries, count] = await Promise.all([
+				loadStatsEntries(STATS_ENTRIES_PAGE_SIZE, 0),
+				getStatsEntryCount(),
+			]);
+			setStatsEntriesState(reloadedEntries);
+			setStatsEntryCount(count);
+		},
+		[],
+	);
+
+	// Delete stats entry
+	const deleteStatsEntry = useCallback(async (id: string) => {
+		await deleteStatsEntryFromDB(id);
+		setStatsEntriesState((prev) => prev.filter((e) => e.id !== id));
+		setStatsEntryCount((prev) => prev - 1);
 	}, []);
 
 	// Load more activities (pagination)
@@ -214,8 +266,13 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 				addActivity,
 				updateActivities,
 				deleteActivity,
-				stats,
-				setStats,
+				statsEntries,
+				statsEntryCount,
+				loadMoreStatsEntries,
+				loadAllUserStatsEntries,
+				addStatsEntry,
+				updateStatsEntries,
+				deleteStatsEntry,
 			}}
 		>
 			{children}
