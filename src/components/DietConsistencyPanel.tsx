@@ -242,7 +242,7 @@ export function DietConsistencyPanel() {
 							type="date"
 							value={mealDate}
 							onChange={(e) => setMealDate(e.target.value)}
-							className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+							className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
 						/>
 					</div>
 					<div>
@@ -259,7 +259,7 @@ export function DietConsistencyPanel() {
 							onChange={(e) => setMealCalories(e.target.value)}
 							placeholder="e.g. 2000"
 							min="0"
-							className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+							className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
 						/>
 					</div>
 				</div>
@@ -267,27 +267,20 @@ export function DietConsistencyPanel() {
 
 			<HighlightGroup>
 				<Highlight
-					emoji="🎯"
 					value={`${calorieData.dailyLimit} kcal`}
 					label="Daily limit"
 				/>
 				<Highlight
-					emoji="📉"
 					value={`${Math.abs(calorieData.deficit)} kcal`}
 					label={`Daily ${calorieData.deficit >= 0 ? 'deficit' : 'surplus'}`}
-					valueClassName={calorieData.deficit > 0 ? 'text-green-400' : calorieData.deficit < 0 ? 'text-blue-400' : 'text-white'}
 				/>
 				<Highlight
-					emoji="🔥"
 					value={`${calorieData.currentStreak} days`}
 					label="Current Streak"
-					valueClassName="text-orange-400"
 				/>
 				<Highlight
-					emoji="🏆"
 					value={`${calorieData.longestStreak} days`}
 					label="Longest Streak"
-					valueClassName="text-yellow-400"
 				/>
 			</HighlightGroup>
 
@@ -342,7 +335,7 @@ export function DietConsistencyPanel() {
 												/>
 											) : (
 												<div
-													className="w-full h-1 bg-gray-700 rounded-sm"
+													className="w-full h-1 bg-gray-800 rounded-sm"
 													title={`${day.date.toLocaleDateString()}: No data`}
 												/>
 											)}
@@ -377,7 +370,7 @@ export function DietConsistencyPanel() {
 					<span>Over limit</span>
 				</div>
 				<div className="flex items-center gap-1.5">
-					<div className="w-3 h-1 rounded-sm bg-gray-700" />
+					<div className="w-3 h-1 rounded-sm bg-gray-800" />
 					<span>No data</span>
 				</div>
 				<div className="flex items-center gap-1.5">

@@ -484,7 +484,7 @@ export function WeightEvolutionPanel() {
 								id="newWeightEmpty"
 								value={newWeight}
 								onChange={(e) => setNewWeight(e.target.value)}
-								className={`w-full px-4 py-3 bg-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400 ${weightError ? 'border-red-500' : 'border-gray-600'}`}
+								className={`w-full px-4 py-3 bg-gray-800 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400 ${weightError ? 'border-red-500' : 'border-gray-700'}`}
 								placeholder="70"
 								min="20"
 								max="300"
@@ -522,7 +522,7 @@ export function WeightEvolutionPanel() {
 										type="number"
 										value={newBodyFat}
 										onChange={(e) => setNewBodyFat(e.target.value)}
-										className={`w-full px-4 py-3 bg-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400 ${bodyFatError ? 'border-red-500' : 'border-gray-600'}`}
+										className={`w-full px-4 py-3 bg-gray-800 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400 ${bodyFatError ? 'border-red-500' : 'border-gray-700'}`}
 										placeholder="15"
 										min="1"
 										max="55"
@@ -597,7 +597,7 @@ export function WeightEvolutionPanel() {
 							id="newWeight"
 							value={newWeight}
 							onChange={(e) => setNewWeight(e.target.value)}
-							className={`w-full px-4 py-3 bg-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400 ${weightError ? 'border-red-500' : 'border-gray-600'}`}
+							className={`w-full px-4 py-3 bg-gray-800 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400 ${weightError ? 'border-red-500' : 'border-gray-700'}`}
 							placeholder="70"
 							min="20"
 							max="300"
@@ -635,7 +635,7 @@ export function WeightEvolutionPanel() {
 									type="number"
 									value={newBodyFat}
 									onChange={(e) => setNewBodyFat(e.target.value)}
-									className={`w-full px-4 py-3 bg-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400 ${bodyFatError ? 'border-red-500' : 'border-gray-600'}`}
+									className={`w-full px-4 py-3 bg-gray-800 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400 ${bodyFatError ? 'border-red-500' : 'border-gray-700'}`}
 									placeholder="15"
 									min="1"
 									max="55"
@@ -655,33 +655,28 @@ export function WeightEvolutionPanel() {
 			>
 				<HighlightGroup>
 					<Highlight
-						emoji="📉"
 						value={weightStats.kgsLost90Days !== null
 							? `${weightStats.kgsLost90Days >= 0 ? '' : '+'}${Math.abs(weightStats.kgsLost90Days).toFixed(1)} kg`
 							: '—'}
 						label="Lost (90 days)"
 					/>
 					<Highlight
-						emoji="🎯"
 						value={weightStats.kgsToTarget !== null
 							? `${weightStats.kgsToTarget.toFixed(1)} kg`
 							: '—'}
 						label="To Target"
 					/>
 					<Highlight
-						emoji="📅"
 						value={weightStats.weeksToTarget !== null && weightStats.weeksToTarget > 0
 							? `${weightStats.weeksToTarget}`
 							: '—'}
 						label="Weeks to Target"
 					/>
 					<Highlight
-						emoji="🔥"
 						value={weightStats.currentStreak}
 						label="Current Streak"
 					/>
 					<Highlight
-						emoji="🏆"
 						value={weightStats.longestStreak}
 						label="Longest Streak"
 					/>

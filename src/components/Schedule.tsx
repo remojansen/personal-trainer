@@ -81,7 +81,7 @@ export function Schedule({ schedule, onChange }: ScheduleProps) {
 				</thead>
 				<tbody>
 					{Object.values(ActivityType).map((activity) => (
-						<tr key={activity} className="border-t border-gray-700">
+						<tr key={activity} className="border-t border-gray-800">
 							<td className="py-2 pr-4 text-sm text-gray-300">
 								{ACTIVITY_LABELS[activity]}
 							</td>

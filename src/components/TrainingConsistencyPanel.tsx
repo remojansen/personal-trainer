@@ -209,27 +209,22 @@ export function TrainingConsistencyPanel() {
 		<Panel title="Training Consistency">
 			<HighlightGroup>
 				<Highlight
-					emoji="🔥"
 					value={streaks.currentStreak}
 					label="Current Streak"
 				/>
 				<Highlight
-					emoji="🏆"
 					value={streaks.longestStreak}
 					label="Longest Streak"
 				/>
 				<Highlight
-					emoji="🏃"
 					value={`${last30DaysStats.distanceRunKm.toFixed(1)} km`}
 					label="Distance Run"
 				/>
 				<Highlight
-					emoji="🚴"
 					value={`${last30DaysStats.distanceCycledKm.toFixed(1)} km`}
 					label="Distance Cycled"
 				/>
 				<Highlight
-					emoji="⏱️"
 					value={`${last30DaysStats.exerciseMinutes} min`}
 					label="Exercise Minutes"
 				/>

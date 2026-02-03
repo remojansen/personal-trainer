@@ -153,7 +153,7 @@ function CardioActivityPanel({
 						onChange={(e) =>
 							setFormData({ ...formData, distanceKm: e.target.value })
 						}
-						className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+						className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
 						placeholder="e.g., 5.5"
 						required
 					/>
@@ -174,7 +174,7 @@ function CardioActivityPanel({
 							onChange={(e) =>
 								setFormData({ ...formData, durationMinutes: e.target.value })
 							}
-							className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+							className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
 							placeholder="e.g., 30"
 							required
 						/>
@@ -195,7 +195,7 @@ function CardioActivityPanel({
 							onChange={(e) =>
 								setFormData({ ...formData, durationSeconds: e.target.value })
 							}
-							className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+							className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
 							placeholder="e.g., 45"
 						/>
 					</div>
@@ -314,14 +314,14 @@ function StrengthActivityPanel({
 						min="0"
 						value={durationMinutes}
 						onChange={(e) => setDurationMinutes(e.target.value)}
-						className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+						className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
 						placeholder="e.g., 45"
 						required
 					/>
 				</div>
 
 				{repetitions.map((rep, index) => (
-					<div key={rep.type} className="border border-gray-700 rounded-lg p-4">
+					<div key={rep.type} className="border border-gray-800 rounded-lg p-4">
 						<div className="flex items-center justify-between mb-3">
 							<h4 className="text-white font-medium">
 								{REPETITION_LABELS[rep.type]}
@@ -352,7 +352,7 @@ function StrengthActivityPanel({
 									onChange={(e) =>
 										handleRepetitionChange(index, 'weightKg', e.target.value)
 									}
-									className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+									className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
 									placeholder="10"
 									required
 								/>
@@ -372,7 +372,7 @@ function StrengthActivityPanel({
 									onChange={(e) =>
 										handleRepetitionChange(index, 'count', e.target.value)
 									}
-									className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+									className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
 									placeholder="12"
 									required
 								/>
@@ -392,7 +392,7 @@ function StrengthActivityPanel({
 									onChange={(e) =>
 										handleRepetitionChange(index, 'series', e.target.value)
 									}
-									className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+									className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
 									placeholder="3"
 									required
 								/>
@@ -450,7 +450,7 @@ export function TrainingSessionPage() {
 	);
 
 	return (
-		<div className="min-h-screen bg-gray-900 py-8 px-4">
+		<div className="min-h-screen bg-gray-950 py-8 px-4">
 			<div className="max-w-3xl mx-auto">
 				<div className="flex items-center justify-between mb-6">
 					<h1 className="text-2xl font-bold text-white">

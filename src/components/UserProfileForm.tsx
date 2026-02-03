@@ -33,7 +33,7 @@ export function UserProfileForm({
 							name: e.target.value || null,
 						})
 					}
-					className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white placeholder-gray-400"
+					className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white placeholder-gray-400"
 					placeholder="Your name"
 				/>
 			</div>
@@ -55,7 +55,7 @@ export function UserProfileForm({
 							heightCm: e.target.value ? Number(e.target.value) : null,
 						})
 					}
-					className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white placeholder-gray-400"
+					className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white placeholder-gray-400"
 					placeholder="175"
 					min="50"
 					max="250"
@@ -77,7 +77,7 @@ export function UserProfileForm({
 						onChange={(e) =>
 							onWeightChange(e.target.value ? Number(e.target.value) : null)
 						}
-						className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white placeholder-gray-400"
+						className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white placeholder-gray-400"
 						placeholder="70"
 						min="20"
 						max="300"
@@ -103,7 +103,7 @@ export function UserProfileForm({
 							targetWeightKg: e.target.value ? Number(e.target.value) : null,
 						})
 					}
-					className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white placeholder-gray-400"
+					className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white placeholder-gray-400"
 					placeholder="65"
 					min="20"
 					max="300"
@@ -150,7 +150,7 @@ export function UserProfileForm({
 							dateOfBirth: e.target.value || null,
 						})
 					}
-					className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white"
+					className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white"
 				/>
 			</div>
 

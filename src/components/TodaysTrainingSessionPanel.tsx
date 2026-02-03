@@ -144,7 +144,7 @@ export function TodaysTrainingSessionPanel() {
 										className={`px-3 py-1 rounded-full text-sm ${
 											isCompleted
 												? 'bg-green-600/20 text-green-400'
-												: 'bg-gray-700 text-gray-300'
+												: 'bg-gray-800 text-gray-300'
 										}`}
 									>
 										{ACTIVITY_LABELS[activity]} {isCompleted && '✓'}

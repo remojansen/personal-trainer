@@ -43,9 +43,9 @@ export function SettingsPage() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-900 py-8">
+		<div className="min-h-screen bg-gray-950 py-8">
 			<div className="max-w-3xl mx-auto px-4">
-				<div className="bg-gray-800 rounded-lg shadow p-6">
+				<div className="bg-gray-900 rounded-lg shadow p-6">
 					<h2 className="text-xl font-semibold text-white mb-4">
 						User Profile
 					</h2>
@@ -57,7 +57,7 @@ export function SettingsPage() {
 					/>
 				</div>
 
-				<div className="bg-gray-800 rounded-lg shadow p-6 mt-6">
+				<div className="bg-gray-900 rounded-lg shadow p-6 mt-6">
 					<h2 className="text-xl font-semibold text-white mb-4">
 						Training Schedule
 					</h2>

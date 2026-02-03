@@ -220,17 +220,14 @@ export function RunningPaceEvolutionPanel() {
 			{avgPaceLast30Days !== null && (
 				<HighlightGroup>
 					<Highlight
-						emoji="⚡"
 						value={`${formatPace(avgPaceLast30Days)} min`}
 						label="Average pace (km)"
 					/>
 					<Highlight
-						emoji="🏃"
 						value={formatTime(avgPaceLast30Days * 21.0975)}
 						label="Projected 1/2 Marathon"
 					/>
 					<Highlight
-						emoji="🏅"
 						value={formatTime(avgPaceLast30Days * 42.195)}
 						label="Projected Full Marathon"
 					/>

@@ -17,21 +17,21 @@ const colorStyles: Record<ButtonColor, Record<ButtonVariant, string>> = {
 	blue: {
 		primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
 		secondary:
-			'bg-gray-700 text-gray-300 hover:bg-gray-600 focus:ring-gray-500',
-		ghost: 'text-blue-400 hover:text-blue-300 hover:bg-gray-700',
+			'bg-gray-800 text-gray-300 hover:bg-gray-700 focus:ring-gray-500',
+		ghost: 'text-blue-400 hover:text-blue-300 hover:bg-gray-800',
 	},
 	purple: {
 		primary:
 			'bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500',
 		secondary:
-			'bg-gray-700 text-gray-300 hover:bg-gray-600 focus:ring-gray-500',
-		ghost: 'text-purple-400 hover:text-purple-300 hover:bg-gray-700',
+			'bg-gray-800 text-gray-300 hover:bg-gray-700 focus:ring-gray-500',
+		ghost: 'text-purple-400 hover:text-purple-300 hover:bg-gray-800',
 	},
 	gray: {
-		primary: 'bg-gray-700 text-gray-300 hover:bg-gray-600 focus:ring-gray-500',
+		primary: 'bg-gray-800 text-gray-300 hover:bg-gray-700 focus:ring-gray-500',
 		secondary:
-			'bg-gray-700 text-gray-300 hover:bg-gray-600 focus:ring-gray-500',
-		ghost: 'text-gray-400 hover:text-gray-300 hover:bg-gray-700',
+			'bg-gray-800 text-gray-300 hover:bg-gray-700 focus:ring-gray-500',
+		ghost: 'text-gray-400 hover:text-gray-300 hover:bg-gray-800',
 	},
 };
 
@@ -56,7 +56,7 @@ export function Button({
 		'font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800';
 
 	const disabledStyles = disabled
-		? 'bg-gray-700 text-gray-500 cursor-not-allowed hover:bg-gray-700'
+		? 'bg-gray-800 text-gray-500 cursor-not-allowed hover:bg-gray-800'
 		: '';
 
 	// For toggle buttons with active state

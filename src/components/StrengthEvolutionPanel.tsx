@@ -47,19 +47,9 @@ const MUSCLE_GROUP_LABELS: Record<StrengthActivityType, string> = {
 	[ActivityType.StrengthTrainingBack]: 'Back',
 };
 
-const MUSCLE_GROUP_EMOJIS: Record<StrengthActivityType, string> = {
-	[ActivityType.StrengthTrainingLegs]: '🦵',
-	[ActivityType.StrengthTrainingArms]: '💪',
-	[ActivityType.StrengthTrainingCore]: '🎯',
-	[ActivityType.StrengthTrainingChest]: '🫁',
-	[ActivityType.StrengthTrainingShoulders]: '🏋️',
-	[ActivityType.StrengthTrainingBack]: '🔙',
-};
-
 interface MuscleGroupGain {
 	type: StrengthActivityType;
 	label: string;
-	emoji: string;
 	gainPercent: number;
 	firstWeight: number | null;
 	lastWeight: number | null;
@@ -206,7 +196,6 @@ export function StrengthEvolutionPanel() {
 				return {
 					type: muscleType,
 					label: MUSCLE_GROUP_LABELS[muscleType],
-					emoji: MUSCLE_GROUP_EMOJIS[muscleType],
 					gainPercent: 0,
 					firstWeight: null,
 					lastWeight: null,
@@ -240,7 +229,6 @@ export function StrengthEvolutionPanel() {
 			return {
 				type: muscleType,
 				label: MUSCLE_GROUP_LABELS[muscleType],
-				emoji: MUSCLE_GROUP_EMOJIS[muscleType],
 				gainPercent,
 				firstWeight,
 				lastWeight,
@@ -274,10 +262,8 @@ export function StrengthEvolutionPanel() {
 				{muscleGroupGains.map((gain) => (
 					<Highlight
 						key={gain.type}
-						emoji={gain.emoji}
-						value={`${gain.gainPercent >= 0 ? '+' : ''}${gain.gainPercent.toFixed(1)}%`}
+						value={`${gain.gainPercent >= 0 ? '+' : '-'}${gain.gainPercent.toFixed(1)}%`}
 						label={`${gain.label} Gain`}
-						valueClassName={gain.gainPercent >= 0 ? 'text-green-400' : 'text-red-400'}
 					/>
 				))}
 			</HighlightGroup>

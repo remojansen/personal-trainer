@@ -46,14 +46,14 @@ export function Modal({
 				aria-label="Close modal"
 			/>
 			<div
-				className={`relative bg-gray-800 rounded-lg shadow-xl ${sizeStyles[size]} w-full mx-4 border border-gray-700`}
+				className={`relative bg-gray-900 rounded-lg shadow-xl ${sizeStyles[size]} w-full mx-4 border border-gray-800`}
 			>
-				<div className="px-6 py-4 border-b border-gray-700">
+				<div className="px-6 py-4 border-b border-gray-800">
 					<h3 className="text-lg font-semibold text-white">{title}</h3>
 				</div>
 				<div className="px-6 py-4 text-gray-300">{children}</div>
 				{(primaryAction || secondaryAction) && (
-					<div className="px-6 py-4 border-t border-gray-700 flex justify-end gap-3">
+					<div className="px-6 py-4 border-t border-gray-800 flex justify-end gap-3">
 						{secondaryAction && (
 							<Button variant="secondary" onClick={secondaryAction.onClick}>
 								{secondaryAction.label}
