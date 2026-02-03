@@ -12,6 +12,8 @@ import {
 import { maleBodyFatData } from '../data/body-fat';
 import { useUserData } from '../hooks/useUserData';
 import { Button } from './Button';
+import { Highlight } from './Highlight';
+import { HighlightGroup } from './HighlightGroup';
 import { Modal } from './Modal';
 import { Panel } from './Panel';
 
@@ -651,59 +653,39 @@ export function WeightEvolutionPanel() {
 				title="Weight Evolution"
 				cta={{ cta: 'Log Weight', onCta: openLogWeightModal }}
 			>
-				<div className="flex flex-wrap gap-6 mb-6">
-					<div className="flex items-center gap-3">
-						<div className="text-3xl">📉</div>
-						<div>
-							<div className="text-2xl font-bold text-white">
-								{weightStats.kgsLost90Days !== null
-									? `${weightStats.kgsLost90Days >= 0 ? '' : '+'}${Math.abs(weightStats.kgsLost90Days).toFixed(1)} kg`
-									: '—'}
-							</div>
-							<div className="text-xs text-gray-400">Lost (90 days)</div>
-						</div>
-					</div>
-					<div className="flex items-center gap-3">
-						<div className="text-3xl">🎯</div>
-						<div>
-							<div className="text-2xl font-bold text-white">
-								{weightStats.kgsToTarget !== null
-									? `${weightStats.kgsToTarget.toFixed(1)} kg`
-									: '—'}
-							</div>
-							<div className="text-xs text-gray-400">To Target</div>
-						</div>
-					</div>
-					<div className="flex items-center gap-3">
-						<div className="text-3xl">📅</div>
-						<div>
-							<div className="text-2xl font-bold text-white">
-								{weightStats.weeksToTarget !== null && weightStats.weeksToTarget > 0
-									? `${weightStats.weeksToTarget}`
-									: '—'}
-							</div>
-							<div className="text-xs text-gray-400">Weeks to Target</div>
-						</div>
-					</div>
-					<div className="flex items-center gap-3">
-						<div className="text-3xl">🔥</div>
-						<div>
-							<div className="text-2xl font-bold text-white">
-								{weightStats.currentStreak}
-							</div>
-							<div className="text-xs text-gray-400">Current Streak</div>
-						</div>
-					</div>
-					<div className="flex items-center gap-3">
-						<div className="text-3xl">🏆</div>
-						<div>
-							<div className="text-2xl font-bold text-white">
-								{weightStats.longestStreak}
-							</div>
-							<div className="text-xs text-gray-400">Longest Streak</div>
-						</div>
-					</div>
-				</div>
+				<HighlightGroup>
+					<Highlight
+						emoji="📉"
+						value={weightStats.kgsLost90Days !== null
+							? `${weightStats.kgsLost90Days >= 0 ? '' : '+'}${Math.abs(weightStats.kgsLost90Days).toFixed(1)} kg`
+							: '—'}
+						label="Lost (90 days)"
+					/>
+					<Highlight
+						emoji="🎯"
+						value={weightStats.kgsToTarget !== null
+							? `${weightStats.kgsToTarget.toFixed(1)} kg`
+							: '—'}
+						label="To Target"
+					/>
+					<Highlight
+						emoji="📅"
+						value={weightStats.weeksToTarget !== null && weightStats.weeksToTarget > 0
+							? `${weightStats.weeksToTarget}`
+							: '—'}
+						label="Weeks to Target"
+					/>
+					<Highlight
+						emoji="🔥"
+						value={weightStats.currentStreak}
+						label="Current Streak"
+					/>
+					<Highlight
+						emoji="🏆"
+						value={weightStats.longestStreak}
+						label="Longest Streak"
+					/>
+				</HighlightGroup>
 				<div className="h-80 min-w-0 w-full">
 					<ResponsiveContainer width="100%" height="100%">
 						<LineChart

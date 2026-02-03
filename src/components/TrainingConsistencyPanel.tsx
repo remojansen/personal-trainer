@@ -5,6 +5,8 @@ import {
 	type Schedule,
 	useUserData,
 } from '../hooks/useUserData';
+import { Highlight } from './Highlight';
+import { HighlightGroup } from './HighlightGroup';
 import { Panel } from './Panel';
 
 const DAYS_OF_WEEK = [
@@ -205,53 +207,33 @@ export function TrainingConsistencyPanel() {
 
 	return (
 		<Panel title="Training Consistency">
-			<div className="flex flex-wrap gap-6 mb-6">
-				<div className="flex items-center gap-3">
-					<div className="text-3xl">🔥</div>
-					<div>
-						<div className="text-2xl font-bold text-white">
-							{streaks.currentStreak}
-						</div>
-						<div className="text-xs text-gray-400">Current Streak</div>
-					</div>
-				</div>
-				<div className="flex items-center gap-3">
-					<div className="text-3xl">🏆</div>
-					<div>
-						<div className="text-2xl font-bold text-white">
-							{streaks.longestStreak}
-						</div>
-						<div className="text-xs text-gray-400">Longest Streak</div>
-					</div>
-				</div>
-				<div className="flex items-center gap-3">
-					<div className="text-3xl">🏃</div>
-					<div>
-						<div className="text-2xl font-bold text-white">
-							{last30DaysStats.distanceRunKm.toFixed(1)} km
-						</div>
-						<div className="text-xs text-gray-400">Distance Run </div>
-					</div>
-				</div>
-				<div className="flex items-center gap-3">
-					<div className="text-3xl">🚴</div>
-					<div>
-						<div className="text-2xl font-bold text-white">
-							{last30DaysStats.distanceCycledKm.toFixed(1)} km
-						</div>
-						<div className="text-xs text-gray-400">Distance Cycled </div>
-					</div>
-				</div>
-				<div className="flex items-center gap-3">
-					<div className="text-3xl">⏱️</div>
-					<div>
-						<div className="text-2xl font-bold text-white">
-							{last30DaysStats.exerciseMinutes} min
-						</div>
-						<div className="text-xs text-gray-400">Exercise Minutes </div>
-					</div>
-				</div>
-			</div>
+			<HighlightGroup>
+				<Highlight
+					emoji="🔥"
+					value={streaks.currentStreak}
+					label="Current Streak"
+				/>
+				<Highlight
+					emoji="🏆"
+					value={streaks.longestStreak}
+					label="Longest Streak"
+				/>
+				<Highlight
+					emoji="🏃"
+					value={`${last30DaysStats.distanceRunKm.toFixed(1)} km`}
+					label="Distance Run"
+				/>
+				<Highlight
+					emoji="🚴"
+					value={`${last30DaysStats.distanceCycledKm.toFixed(1)} km`}
+					label="Distance Cycled"
+				/>
+				<Highlight
+					emoji="⏱️"
+					value={`${last30DaysStats.exerciseMinutes} min`}
+					label="Exercise Minutes"
+				/>
+			</HighlightGroup>
 			<div className="overflow-x-auto">
 				<table className="w-full">
 					<thead>

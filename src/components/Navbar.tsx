@@ -1,3 +1,4 @@
+import { IoSettingsSharp } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 
 export function Navbar() {
@@ -13,7 +14,7 @@ export function Navbar() {
 					</Link>
 					<div className="flex items-center gap-4">
 						<Link to="/settings" className="text-gray-300 hover:text-white">
-							Settings
+							<IoSettingsSharp className="h-6 w-6" />
 						</Link>
 					</div>
 				</div>

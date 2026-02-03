@@ -10,6 +10,8 @@ import {
 	YAxis,
 } from 'recharts';
 import { ActivityType, type Cardio, useUserData } from '../hooks/useUserData';
+import { Highlight } from './Highlight';
+import { HighlightGroup } from './HighlightGroup';
 import { Panel } from './Panel';
 
 interface ChartDataPoint {
@@ -216,41 +218,23 @@ export function RunningPaceEvolutionPanel() {
 	return (
 		<Panel title="Running Pace Evolution">
 			{avgPaceLast30Days !== null && (
-				<div className="flex flex-wrap gap-6 mb-6">
-					<div className="flex items-center gap-3">
-						<div className="text-3xl">⚡</div>
-						<div>
-							<div className="text-2xl font-bold text-white">
-								{formatPace(avgPaceLast30Days)} min
-							</div>
-							<div className="text-xs text-gray-400">
-								Average pace (km) 
-							</div>
-						</div>
-					</div>
-					<div className="flex items-center gap-3">
-						<div className="text-3xl">🏃</div>
-						<div>
-							<div className="text-2xl font-bold text-white">
-								{formatTime(avgPaceLast30Days * 21.0975)}
-							</div>
-							<div className="text-xs text-gray-400">
-								Projected 1/2 Marathon
-							</div>
-						</div>
-					</div>
-					<div className="flex items-center gap-3">
-						<div className="text-3xl">🏅</div>
-						<div>
-							<div className="text-2xl font-bold text-white">
-								{formatTime(avgPaceLast30Days * 42.195)}
-							</div>
-							<div className="text-xs text-gray-400">
-								Projected Full Marathon
-							</div>
-						</div>
-					</div>
-				</div>
+				<HighlightGroup>
+					<Highlight
+						emoji="⚡"
+						value={`${formatPace(avgPaceLast30Days)} min`}
+						label="Average pace (km)"
+					/>
+					<Highlight
+						emoji="🏃"
+						value={formatTime(avgPaceLast30Days * 21.0975)}
+						label="Projected 1/2 Marathon"
+					/>
+					<Highlight
+						emoji="🏅"
+						value={formatTime(avgPaceLast30Days * 42.195)}
+						label="Projected Full Marathon"
+					/>
+				</HighlightGroup>
 			)}
 			<div className="h-80 min-w-0 w-full">
 				<ResponsiveContainer width="100%" height="100%">

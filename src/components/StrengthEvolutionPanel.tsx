@@ -10,11 +10,14 @@ import {
 	YAxis,
 } from 'recharts';
 import {
+	ActivityType,
 	type RepetitionKey,
 	RepetitionType,
 	type Strength,
 	useUserData,
 } from '../hooks/useUserData';
+import { Highlight } from './Highlight';
+import { HighlightGroup } from './HighlightGroup';
 import { Panel } from './Panel';
 
 const REPETITION_LABELS: Record<RepetitionKey, string> = {
@@ -26,6 +29,41 @@ const REPETITION_COLORS: Record<RepetitionKey, string> = {
 	[RepetitionType.BicepCurl]: '#3b82f6', // blue
 	[RepetitionType.CableTricepPushdown]: '#22c55e', // green
 };
+
+type StrengthActivityType =
+	| typeof ActivityType.StrengthTrainingLegs
+	| typeof ActivityType.StrengthTrainingArms
+	| typeof ActivityType.StrengthTrainingCore
+	| typeof ActivityType.StrengthTrainingShoulders
+	| typeof ActivityType.StrengthTrainingBack
+	| typeof ActivityType.StrengthTrainingChest;
+
+const MUSCLE_GROUP_LABELS: Record<StrengthActivityType, string> = {
+	[ActivityType.StrengthTrainingLegs]: 'Legs',
+	[ActivityType.StrengthTrainingArms]: 'Arms',
+	[ActivityType.StrengthTrainingCore]: 'Core',
+	[ActivityType.StrengthTrainingChest]: 'Chest',
+	[ActivityType.StrengthTrainingShoulders]: 'Shoulders',
+	[ActivityType.StrengthTrainingBack]: 'Back',
+};
+
+const MUSCLE_GROUP_EMOJIS: Record<StrengthActivityType, string> = {
+	[ActivityType.StrengthTrainingLegs]: '🦵',
+	[ActivityType.StrengthTrainingArms]: '💪',
+	[ActivityType.StrengthTrainingCore]: '🎯',
+	[ActivityType.StrengthTrainingChest]: '🫁',
+	[ActivityType.StrengthTrainingShoulders]: '🏋️',
+	[ActivityType.StrengthTrainingBack]: '🔙',
+};
+
+interface MuscleGroupGain {
+	type: StrengthActivityType;
+	label: string;
+	emoji: string;
+	gainPercent: number;
+	firstWeight: number | null;
+	lastWeight: number | null;
+}
 
 interface ChartDataPoint {
 	date: string;
@@ -145,6 +183,71 @@ export function StrengthEvolutionPanel() {
 		);
 	}, [chartData]);
 
+	// Calculate muscle group gains (first day vs last day)
+	const muscleGroupGains = useMemo((): MuscleGroupGain[] => {
+		const strengthActivities = activities.filter(isStrengthActivity);
+
+		const strengthTypes: StrengthActivityType[] = [
+			ActivityType.StrengthTrainingLegs,
+			ActivityType.StrengthTrainingArms,
+			ActivityType.StrengthTrainingCore,
+			ActivityType.StrengthTrainingChest,
+			ActivityType.StrengthTrainingShoulders,
+			ActivityType.StrengthTrainingBack,
+		];
+
+		return strengthTypes.map((muscleType) => {
+			// Get all activities for this muscle group
+			const muscleActivities = strengthActivities
+				.filter((a) => a.type === muscleType)
+				.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+			if (muscleActivities.length === 0) {
+				return {
+					type: muscleType,
+					label: MUSCLE_GROUP_LABELS[muscleType],
+					emoji: MUSCLE_GROUP_EMOJIS[muscleType],
+					gainPercent: 0,
+					firstWeight: null,
+					lastWeight: null,
+				};
+			}
+
+			// Get max weight from first day
+			const firstDayActivities = muscleActivities.filter(
+				(a) => a.date === muscleActivities[0].date,
+			);
+			const firstWeights = firstDayActivities.flatMap((a) =>
+				a.repetitions.filter((r) => r.weightKg > 0).map((r) => r.weightKg),
+			);
+			const firstWeight = firstWeights.length > 0 ? Math.max(...firstWeights) : null;
+
+			// Get max weight from last day
+			const lastDayActivities = muscleActivities.filter(
+				(a) => a.date === muscleActivities[muscleActivities.length - 1].date,
+			);
+			const lastWeights = lastDayActivities.flatMap((a) =>
+				a.repetitions.filter((r) => r.weightKg > 0).map((r) => r.weightKg),
+			);
+			const lastWeight = lastWeights.length > 0 ? Math.max(...lastWeights) : null;
+
+			// Calculate percentage gain (default to 0 if not enough data)
+			let gainPercent = 0;
+			if (firstWeight !== null && lastWeight !== null && firstWeight > 0) {
+				gainPercent = ((lastWeight - firstWeight) / firstWeight) * 100;
+			}
+
+			return {
+				type: muscleType,
+				label: MUSCLE_GROUP_LABELS[muscleType],
+				emoji: MUSCLE_GROUP_EMOJIS[muscleType],
+				gainPercent,
+				firstWeight,
+				lastWeight,
+			};
+		});
+	}, [activities]);
+
 	if (isLoading) {
 		return (
 			<Panel title="Strength Evolution">
@@ -167,6 +270,17 @@ export function StrengthEvolutionPanel() {
 
 	return (
 		<Panel title="Strength Evolution">
+			<HighlightGroup>
+				{muscleGroupGains.map((gain) => (
+					<Highlight
+						key={gain.type}
+						emoji={gain.emoji}
+						value={`${gain.gainPercent >= 0 ? '+' : ''}${gain.gainPercent.toFixed(1)}%`}
+						label={`${gain.label} Gain`}
+						valueClassName={gain.gainPercent >= 0 ? 'text-green-400' : 'text-red-400'}
+					/>
+				))}
+			</HighlightGroup>
 			<div className="h-80 min-w-0 w-full">
 				<ResponsiveContainer width="100%" height="100%">
 					<LineChart

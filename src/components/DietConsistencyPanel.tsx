@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { type DietEntry, useUserData } from '../hooks/useUserData';
+import { Highlight } from './Highlight';
+import { HighlightGroup } from './HighlightGroup';
 import { Modal } from './Modal';
 import { Panel } from './Panel';
 
@@ -263,36 +265,31 @@ export function DietConsistencyPanel() {
 				</div>
 			</Modal>
 
-			<div className="flex gap-6 mb-4">
-				<div>
-					<div className="text-2xl font-bold text-white">
-						🎯 {calorieData.dailyLimit} kcal
-					</div>
-					<div className="text-sm text-gray-400">Daily limit</div>
-				</div>
-				<div>
-					<div
-						className={`text-2xl font-bold ${calorieData.deficit > 0 ? 'text-green-400' : calorieData.deficit < 0 ? 'text-blue-400' : 'text-white'}`}
-					>
-						📉 {Math.abs(calorieData.deficit)} kcal
-					</div>
-					<div className="text-sm text-gray-400">
-						Daily {calorieData.deficit >= 0 ? 'deficit' : 'surplus'}
-					</div>
-				</div>
-				<div>
-					<div className="text-2xl font-bold text-orange-400">
-						🔥 {calorieData.currentStreak} days
-					</div>
-					<div className="text-sm text-gray-400">Current Streak</div>
-				</div>
-				<div>
-					<div className="text-2xl font-bold text-yellow-400">
-						🏆 {calorieData.longestStreak} days
-					</div>
-					<div className="text-sm text-gray-400">Longest Streak</div>
-				</div>
-			</div>
+			<HighlightGroup>
+				<Highlight
+					emoji="🎯"
+					value={`${calorieData.dailyLimit} kcal`}
+					label="Daily limit"
+				/>
+				<Highlight
+					emoji="📉"
+					value={`${Math.abs(calorieData.deficit)} kcal`}
+					label={`Daily ${calorieData.deficit >= 0 ? 'deficit' : 'surplus'}`}
+					valueClassName={calorieData.deficit > 0 ? 'text-green-400' : calorieData.deficit < 0 ? 'text-blue-400' : 'text-white'}
+				/>
+				<Highlight
+					emoji="🔥"
+					value={`${calorieData.currentStreak} days`}
+					label="Current Streak"
+					valueClassName="text-orange-400"
+				/>
+				<Highlight
+					emoji="🏆"
+					value={`${calorieData.longestStreak} days`}
+					label="Longest Streak"
+					valueClassName="text-yellow-400"
+				/>
+			</HighlightGroup>
 
 			<div className="overflow-x-auto">
 				<div className="min-w-[800px] h-48 relative">
