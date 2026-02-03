@@ -36,9 +36,20 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Clone gh-pages branch
-          git fetch origin gh-pages:gh-pages || git checkout --orphan gh-pages
-          git worktree add gh-pages-dir gh-pages
+          # Check if gh-pages branch exists on remote
+          if git ls-remote --heads origin gh-pages | grep -q gh-pages; then
+            # Branch exists, fetch it
+            git fetch origin gh-pages:gh-pages
+            git worktree add gh-pages-dir gh-pages
+          else
+            # Branch doesn't exist, create orphan branch
+            mkdir gh-pages-dir
+            cd gh-pages-dir
+            git init
+            git checkout --orphan gh-pages
+            git remote add origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+            cd ..
+          fi
           
           # Remove assets folder from gh-pages
           rm -rf gh-pages-dir/assets
