@@ -45,8 +45,11 @@ jobs:
           
           # Copy built files to gh-pages
           cp -r assets gh-pages-dir/
-          cp -r public gh-pages-dir/
+          cp -r public/* gh-pages-dir/
           cp index.html gh-pages-dir/
+          cp sw.js gh-pages-dir/
+          cp workbox-*.js gh-pages-dir/
+          cp manifest.webmanifest gh-pages-dir/
           
           # Commit and push
           cd gh-pages-dir

@@ -31,6 +31,16 @@ const REPETITION_LABELS: Record<RepetitionKey, string> = {
 	[RepetitionType.FrontRaise]: 'Front Raise',
 	[RepetitionType.LateralRaise]: 'Lateral Raise',
 	[RepetitionType.ShoulderPress]: 'Shoulder Press',
+	[RepetitionType.BackExtension]: 'Back Extension',
+	[RepetitionType.CableLatPulldown]: 'Cable Lat Pulldown',
+	[RepetitionType.CableRow]: 'Cable Row',
+	[RepetitionType.Shrugs]: 'Shrugs',
+	[RepetitionType.DumbbellBenchPress]: 'Dumbbell Bench Press',
+	[RepetitionType.Flys]: 'Flys',
+	[RepetitionType.BarbellSquats]: 'Barbell Squats',
+	[RepetitionType.CableHipAdduction]: 'Cable Hip Adduction',
+	[RepetitionType.LegExtension]: 'Leg Extension',
+	[RepetitionType.LyingLegCurl]: 'Lying Leg Curl',
 };
 
 const REPETITION_COLORS: Record<RepetitionKey, string> = {
@@ -39,6 +49,16 @@ const REPETITION_COLORS: Record<RepetitionKey, string> = {
 	[RepetitionType.FrontRaise]: '#f59e0b', // amber
 	[RepetitionType.LateralRaise]: '#a855f7', // purple
 	[RepetitionType.ShoulderPress]: '#ec4899', // pink
+	[RepetitionType.BackExtension]: '#14b8a6', // teal
+	[RepetitionType.CableLatPulldown]: '#6366f1', // indigo
+	[RepetitionType.CableRow]: '#84cc16', // lime
+	[RepetitionType.Shrugs]: '#f97316', // orange
+	[RepetitionType.DumbbellBenchPress]: '#ef4444', // red
+	[RepetitionType.Flys]: '#8b5cf6', // violet
+	[RepetitionType.BarbellSquats]: '#06b6d4', // cyan
+	[RepetitionType.CableHipAdduction]: '#d946ef', // fuchsia
+	[RepetitionType.LegExtension]: '#eab308', // yellow
+	[RepetitionType.LyingLegCurl]: '#10b981', // emerald
 };
 
 type StrengthActivityType =

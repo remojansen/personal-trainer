@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { InstallPrompt } from './components/InstallPrompt';
 import { Layout } from './components/Layout';
 import { useBackup } from './hooks/useBackup';
 import { useUserData } from './hooks/useUserData';
@@ -54,6 +55,7 @@ function App() {
 				<Route path="/settings" element={<SettingsPage />} />
 				<Route path="/training-session" element={<TrainingSessionPage />} />
 			</Routes>
+			<InstallPrompt />
 		</Layout>
 	);
 }

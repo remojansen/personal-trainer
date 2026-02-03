@@ -94,6 +94,16 @@ export const RepetitionType = {
 	FrontRaise: 'FrontRaise',
 	LateralRaise: 'LateralRaise',
 	ShoulderPress: 'ShoulderPress',
+	BackExtension: 'BackExtension',
+	CableLatPulldown: 'CableLatPulldown',
+	CableRow: 'CableRow',
+	Shrugs: 'Shrugs',
+	DumbbellBenchPress: 'DumbbellBenchPress',
+	Flys: 'Flys',
+	BarbellSquats: 'BarbellSquats',
+	CableHipAdduction: 'CableHipAdduction',
+	LegExtension: 'LegExtension',
+	LyingLegCurl: 'LyingLegCurl',
 } as const;
 
 export type RepetitionKey =
@@ -111,10 +121,23 @@ export function getRepetitionsForActivityType(
 				RepetitionType.LateralRaise,
 				RepetitionType.ShoulderPress,
 			];
-		case ActivityType.StrengthTrainingLegs:
-		case ActivityType.StrengthTrainingCore:
-		case ActivityType.StrengthTrainingChest:
 		case ActivityType.StrengthTrainingBack:
+			return [
+				RepetitionType.BackExtension,
+				RepetitionType.CableLatPulldown,
+				RepetitionType.CableRow,
+				RepetitionType.Shrugs,
+			];
+		case ActivityType.StrengthTrainingChest:
+			return [RepetitionType.DumbbellBenchPress, RepetitionType.Flys];
+		case ActivityType.StrengthTrainingLegs:
+			return [
+				RepetitionType.BarbellSquats,
+				RepetitionType.CableHipAdduction,
+				RepetitionType.LegExtension,
+				RepetitionType.LyingLegCurl,
+			];
+		case ActivityType.StrengthTrainingCore:
 			return [];
 		default:
 			return [];

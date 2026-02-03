@@ -49,6 +49,16 @@ const REPETITION_LABELS: Record<RepetitionKey, string> = {
 	[RepetitionType.FrontRaise]: 'Front Raise',
 	[RepetitionType.LateralRaise]: 'Lateral Raise',
 	[RepetitionType.ShoulderPress]: 'Shoulder Press',
+	[RepetitionType.BackExtension]: 'Back Extension',
+	[RepetitionType.CableLatPulldown]: 'Cable Lat Pulldown',
+	[RepetitionType.CableRow]: 'Cable Row',
+	[RepetitionType.Shrugs]: 'Shrugs',
+	[RepetitionType.DumbbellBenchPress]: 'Dumbbell Bench Press',
+	[RepetitionType.Flys]: 'Flys',
+	[RepetitionType.BarbellSquats]: 'Barbell Squats',
+	[RepetitionType.CableHipAdduction]: 'Cable Hip Adduction',
+	[RepetitionType.LegExtension]: 'Leg Extension',
+	[RepetitionType.LyingLegCurl]: 'Lying Leg Curl',
 };
 
 const REPETITION_IMAGES: Record<RepetitionKey, string> = {
@@ -58,6 +68,19 @@ const REPETITION_IMAGES: Record<RepetitionKey, string> = {
 	[RepetitionType.FrontRaise]: '/img/repetition-type/FrontRaise.png',
 	[RepetitionType.LateralRaise]: '/img/repetition-type/LateralRaise.png',
 	[RepetitionType.ShoulderPress]: '/img/repetition-type/ShoulderPress.png',
+	[RepetitionType.BackExtension]: '/img/repetition-type/BackExtension.png',
+	[RepetitionType.CableLatPulldown]:
+		'/img/repetition-type/CableLatPulldown.png',
+	[RepetitionType.CableRow]: '/img/repetition-type/CableRow.png',
+	[RepetitionType.Shrugs]: '/img/repetition-type/Shrugs.png',
+	[RepetitionType.DumbbellBenchPress]:
+		'/img/repetition-type/DumbbellBenchPress.png',
+	[RepetitionType.Flys]: '/img/repetition-type/Flys.png',
+	[RepetitionType.BarbellSquats]: '/img/repetition-type/BarbellSquats.png',
+	[RepetitionType.CableHipAdduction]:
+		'/img/repetition-type/CableHipAdduction.png',
+	[RepetitionType.LegExtension]: '/img/repetition-type/LegExtension.png',
+	[RepetitionType.LyingLegCurl]: '/img/repetition-type/LyingLegCurl.png',
 };
 
 const CARDIO_TYPES: Set<ActivityTypeKey> = new Set([
