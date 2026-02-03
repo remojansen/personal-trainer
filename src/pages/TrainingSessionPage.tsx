@@ -62,25 +62,21 @@ const REPETITION_LABELS: Record<RepetitionKey, string> = {
 };
 
 const REPETITION_IMAGES: Record<RepetitionKey, string> = {
-	[RepetitionType.BicepCurl]: '/img/repetition-type/BicepCurl.png',
-	[RepetitionType.CableTricepPushdown]:
-		'/img/repetition-type/CableTricepPushdown.png',
-	[RepetitionType.FrontRaise]: '/img/repetition-type/FrontRaise.png',
-	[RepetitionType.LateralRaise]: '/img/repetition-type/LateralRaise.png',
-	[RepetitionType.ShoulderPress]: '/img/repetition-type/ShoulderPress.png',
-	[RepetitionType.BackExtension]: '/img/repetition-type/BackExtension.png',
-	[RepetitionType.CableLatPulldown]:
-		'/img/repetition-type/CableLatPulldown.png',
-	[RepetitionType.CableRow]: '/img/repetition-type/CableRow.png',
-	[RepetitionType.Shrugs]: '/img/repetition-type/Shrugs.png',
-	[RepetitionType.DumbbellBenchPress]:
-		'/img/repetition-type/DumbbellBenchPress.png',
-	[RepetitionType.Flys]: '/img/repetition-type/Flys.png',
-	[RepetitionType.BarbellSquats]: '/img/repetition-type/BarbellSquats.png',
-	[RepetitionType.CableHipAdduction]:
-		'/img/repetition-type/CableHipAdduction.png',
-	[RepetitionType.LegExtension]: '/img/repetition-type/LegExtension.png',
-	[RepetitionType.LyingLegCurl]: '/img/repetition-type/LyingLegCurl.png',
+	[RepetitionType.BicepCurl]: `${import.meta.env.BASE_URL}img/repetition-type/BicepCurl.png`,
+	[RepetitionType.CableTricepPushdown]: `${import.meta.env.BASE_URL}img/repetition-type/CableTricepPushdown.png`,
+	[RepetitionType.FrontRaise]: `${import.meta.env.BASE_URL}img/repetition-type/FrontRaise.png`,
+	[RepetitionType.LateralRaise]: `${import.meta.env.BASE_URL}img/repetition-type/LateralRaise.png`,
+	[RepetitionType.ShoulderPress]: `${import.meta.env.BASE_URL}img/repetition-type/ShoulderPress.png`,
+	[RepetitionType.BackExtension]: `${import.meta.env.BASE_URL}img/repetition-type/BackExtension.png`,
+	[RepetitionType.CableLatPulldown]: `${import.meta.env.BASE_URL}img/repetition-type/CableLatPulldown.png`,
+	[RepetitionType.CableRow]: `${import.meta.env.BASE_URL}img/repetition-type/CableRow.png`,
+	[RepetitionType.Shrugs]: `${import.meta.env.BASE_URL}img/repetition-type/Shrugs.png`,
+	[RepetitionType.DumbbellBenchPress]: `${import.meta.env.BASE_URL}img/repetition-type/DumbbellBenchPress.png`,
+	[RepetitionType.Flys]: `${import.meta.env.BASE_URL}img/repetition-type/Flys.png`,
+	[RepetitionType.BarbellSquats]: `${import.meta.env.BASE_URL}img/repetition-type/BarbellSquats.png`,
+	[RepetitionType.CableHipAdduction]: `${import.meta.env.BASE_URL}img/repetition-type/CableHipAdduction.png`,
+	[RepetitionType.LegExtension]: `${import.meta.env.BASE_URL}img/repetition-type/LegExtension.png`,
+	[RepetitionType.LyingLegCurl]: `${import.meta.env.BASE_URL}img/repetition-type/LyingLegCurl.png`,
 };
 
 const CARDIO_TYPES: Set<ActivityTypeKey> = new Set([

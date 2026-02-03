@@ -144,5 +144,5 @@ src/dev-dist/
 sw.js
 workbox-*.js
 manifest.webmanifest
-./index.html
+/index.html
 assets
