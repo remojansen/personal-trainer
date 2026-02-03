@@ -99,7 +99,6 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
 export function RunningPaceEvolutionPanel() {
 	const { activities, isLoading } = useUserData();
 	const [selectedRange, setSelectedRange] = useState<TimeRange>('1month');
-	const [isCalculating, setIsCalculating] = useState(false);
 
 	const avgPaceLast30Days = useMemo(() => {
 		const today = new Date();
@@ -127,7 +126,6 @@ export function RunningPaceEvolutionPanel() {
 	}, [activities]);
 
 	const chartData = useMemo(() => {
-		setIsCalculating(true);
 		// Filter by time range
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
@@ -207,18 +205,16 @@ export function RunningPaceEvolutionPanel() {
 		}
 
 		// Sort by date ascending
-		const sortedData = data.sort(
+		return data.sort(
 			(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
 		);
-		setIsCalculating(false);
-		return sortedData;
 	}, [activities, selectedRange]);
 
 	const timeRangeFilter = (
 		<TimeframeFilter
 			value={selectedRange}
 			onChange={setSelectedRange}
-			disabled={isLoading || isCalculating}
+			disabled={isLoading}
 		/>
 	);
 
@@ -227,16 +223,6 @@ export function RunningPaceEvolutionPanel() {
 			<Panel title="Running Pace Evolution" headerActions={timeRangeFilter}>
 				<div className="h-64 flex items-center justify-center text-gray-400">
 					Loading...
-				</div>
-			</Panel>
-		);
-	}
-
-	if (isCalculating) {
-		return (
-			<Panel title="Running Pace Evolution" headerActions={timeRangeFilter}>
-				<div className="h-64 flex items-center justify-center text-gray-400">
-					Calculating...
 				</div>
 			</Panel>
 		);

@@ -114,10 +114,8 @@ function isStrengthActivity(activity: { type: string }): activity is Strength {
 export function StrengthEvolutionPanel() {
 	const { activities, isLoading } = useUserData();
 	const [selectedRange, setSelectedRange] = useState<TimeRange>('1month');
-	const [isCalculating, setIsCalculating] = useState(false);
 
 	const chartData = useMemo(() => {
-		setIsCalculating(true);
 		// Filter by time range
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
@@ -185,11 +183,9 @@ export function StrengthEvolutionPanel() {
 		}
 
 		// Sort by date ascending
-		const sortedData = data.sort(
+		return data.sort(
 			(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
 		);
-		setIsCalculating(false);
-		return sortedData;
 	}, [activities, selectedRange]);
 
 	// Determine which repetition types have data
@@ -270,7 +266,7 @@ export function StrengthEvolutionPanel() {
 		<TimeframeFilter
 			value={selectedRange}
 			onChange={setSelectedRange}
-			disabled={isLoading || isCalculating}
+			disabled={isLoading}
 		/>
 	);
 
@@ -279,16 +275,6 @@ export function StrengthEvolutionPanel() {
 			<Panel title="Strength Evolution" headerActions={timeRangeFilter}>
 				<div className="h-64 flex items-center justify-center text-gray-400">
 					Loading...
-				</div>
-			</Panel>
-		);
-	}
-
-	if (isCalculating) {
-		return (
-			<Panel title="Strength Evolution" headerActions={timeRangeFilter}>
-				<div className="h-64 flex items-center justify-center text-gray-400">
-					Calculating...
 				</div>
 			</Panel>
 		);

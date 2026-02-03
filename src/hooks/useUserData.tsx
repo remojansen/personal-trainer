@@ -30,6 +30,7 @@ import {
 	saveStatsEntry,
 	saveUserProfile,
 } from './db';
+import { updateLocalModified } from './useBackup';
 
 export interface UserProfile {
 	name: string | null;
@@ -292,9 +293,11 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 		(newUserProfile: UserProfile) => {
 			setUserProfileState(newUserProfile);
 			setIsRegistered(checkIsRegistered(newUserProfile));
-			saveUserProfile(newUserProfile).catch((error) => {
-				console.error('Failed to save user profile:', error);
-			});
+			saveUserProfile(newUserProfile)
+				.then(() => updateLocalModified())
+				.catch((error) => {
+					console.error('Failed to save user profile:', error);
+				});
 		},
 		[checkIsRegistered],
 	);
@@ -328,6 +331,7 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 			setStatsEntriesState((prev) => [entry, ...prev]); // newest first
 			setStatsEntryCount((prev) => prev + 1);
 		}
+		updateLocalModified();
 	}, []);
 
 	// Bulk update stats entries
@@ -341,6 +345,7 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 			]);
 			setStatsEntriesState(reloadedEntries);
 			setStatsEntryCount(count);
+			updateLocalModified();
 		},
 		[],
 	);
@@ -350,6 +355,7 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 		await deleteStatsEntryFromDB(id);
 		setStatsEntriesState((prev) => prev.filter((e) => e.id !== id));
 		setStatsEntryCount((prev) => prev - 1);
+		updateLocalModified();
 	}, []);
 
 	// Load more diet entries (pagination)
@@ -381,6 +387,7 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 			setDietEntriesState((prev) => [entry, ...prev]); // newest first
 			setDietEntryCount((prev) => prev + 1);
 		}
+		updateLocalModified();
 	}, []);
 
 	// Bulk update diet entries
@@ -393,6 +400,7 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 		]);
 		setDietEntriesState(reloadedEntries);
 		setDietEntryCount(count);
+		updateLocalModified();
 	}, []);
 
 	// Delete diet entry
@@ -400,6 +408,7 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 		await deleteDietEntryFromDB(id);
 		setDietEntriesState((prev) => prev.filter((e) => e.id !== id));
 		setDietEntryCount((prev) => prev - 1);
+		updateLocalModified();
 	}, []);
 
 	// Load more activities (pagination)
@@ -421,6 +430,7 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 		await saveActivity(activity);
 		setActivitiesState((prev) => [activity, ...prev]); // newest first
 		setActivityCount((prev) => prev + 1);
+		updateLocalModified();
 	}, []);
 
 	// Bulk update activities
@@ -433,6 +443,7 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 		]);
 		setActivitiesState(reloadedActivities);
 		setActivityCount(count);
+		updateLocalModified();
 	}, []);
 
 	// Delete activity
@@ -440,6 +451,7 @@ export function UserDataProvider({ children }: UserDataProviderProps) {
 		await deleteActivityFromDB(id);
 		setActivitiesState((prev) => prev.filter((a) => a.id !== id));
 		setActivityCount((prev) => prev - 1);
+		updateLocalModified();
 	}, []);
 
 	return (

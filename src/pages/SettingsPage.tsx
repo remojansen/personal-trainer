@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { BackupSettingsPanel } from '../components/BackupSettingsPanel';
 import { Schedule } from '../components/Schedule';
 import { UserProfileForm } from '../components/UserProfileForm';
 import type { Schedule as ScheduleType } from '../hooks/useUserData';
@@ -41,6 +42,11 @@ export function SettingsPage() {
 		});
 	};
 
+	// Reload page when data is restored from backup
+	const handleDataRestored = useCallback(() => {
+		window.location.reload();
+	}, []);
+
 	return (
 		<div className="min-h-screen bg-gray-950 py-8">
 			<div className="max-w-3xl mx-auto px-4">
@@ -64,6 +70,13 @@ export function SettingsPage() {
 						schedule={userProfile.schedule}
 						onChange={handleScheduleChange}
 					/>
+				</div>
+
+				<div className="bg-gray-900 rounded-lg shadow p-6 mt-6">
+					<h2 className="text-xl font-semibold text-white mb-4">
+						Backup & Sync
+					</h2>
+					<BackupSettingsPanel onDataRestored={handleDataRestored} />
 				</div>
 			</div>
 		</div>

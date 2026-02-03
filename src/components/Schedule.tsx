@@ -63,16 +63,16 @@ export function Schedule({ schedule, onChange }: ScheduleProps) {
 
 	return (
 		<div className="overflow-x-auto">
-			<table className="w-full border-collapse min-w-[600px]">
+			<table className="w-full border-collapse">
 				<thead>
 					<tr>
-						<th className="text-left text-sm font-medium text-gray-400 pb-3 pr-4">
+						<th className="text-left text-xs font-medium text-gray-400 pb-2 pr-2">
 							Activity
 						</th>
 						{DAY_LABELS.map((day) => (
 							<th
 								key={day}
-								className="text-center text-sm font-medium text-gray-400 pb-3 px-1"
+								className="text-center text-xs font-medium text-gray-400 pb-2 px-0.5"
 							>
 								{day}
 							</th>
@@ -82,21 +82,23 @@ export function Schedule({ schedule, onChange }: ScheduleProps) {
 				<tbody>
 					{Object.values(ActivityType).map((activity) => (
 						<tr key={activity} className="border-t border-gray-800">
-							<td className="py-2 pr-4 text-sm text-gray-300">
+							<td className="py-1.5 pr-2 text-xs text-gray-300 whitespace-nowrap">
 								{ACTIVITY_LABELS[activity]}
 							</td>
 							{DAYS.map((day) => (
-								<td key={day} className="py-2 px-1 text-center">
+								<td key={day} className="py-1.5 px-0.5 text-center">
 									<button
 										type="button"
 										onClick={() => toggleActivity(day, activity)}
-										className={`w-8 h-8 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+										className={`w-7 h-6 rounded text-[10px] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 ${
 											isActive(day, activity)
-												? 'bg-green-600 hover:bg-green-700'
-												: 'bg-red-600 hover:bg-red-700'
+												? 'bg-green-600 hover:bg-green-700 text-white'
+												: 'bg-red-600 hover:bg-red-700 text-white'
 										}`}
 										aria-label={`${isActive(day, activity) ? 'Disable' : 'Enable'} ${ACTIVITY_LABELS[activity]} on ${day}`}
-									/>
+									>
+										{isActive(day, activity) ? 'YES' : 'NO'}
+									</button>
 								</td>
 							))}
 						</tr>

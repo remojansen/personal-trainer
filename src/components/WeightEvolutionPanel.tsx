@@ -275,15 +275,6 @@ export function WeightEvolutionPanel() {
 		setShowLogWeightModal(false);
 	};
 
-	const _openLogWeightModal = () => {
-		setNewWeight('');
-		setNewBodyFat('');
-		setBodyFatMode('unknown');
-		setWeightError(null);
-		setBodyFatError(null);
-		setShowLogWeightModal(true);
-	};
-
 	const headerActions = (
 		<TimeframeFilter
 			value={selectedRange}

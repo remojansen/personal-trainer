@@ -33,15 +33,20 @@ interface PersonalTrainerDB extends DBSchema {
 			'by-date': string;
 		};
 	};
+	backupFolderHandle: {
+		key: 'handle';
+		value: FileSystemDirectoryHandle;
+	};
 }
 
 const DB_NAME = 'personal-trainer-db';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 const REQUIRED_STORES = [
 	'userProfile',
 	'activities',
 	'statsEntries',
 	'dietEntries',
+	'backupFolderHandle',
 ] as const;
 
 let dbInstance: IDBPDatabase<PersonalTrainerDB> | null = null;
@@ -77,6 +82,11 @@ async function createDB(): Promise<IDBPDatabase<PersonalTrainerDB>> {
 					keyPath: 'id',
 				});
 				dietEntriesStore.createIndex('by-date', 'date');
+			}
+
+			// Backup folder handle store
+			if (!db.objectStoreNames.contains('backupFolderHandle')) {
+				db.createObjectStore('backupFolderHandle');
 			}
 
 			// Remove old stats store if it exists (migration from v1)

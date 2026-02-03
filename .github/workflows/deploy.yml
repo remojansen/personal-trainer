@@ -1,0 +1,55 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint check
+        run: npm run check
+
+      - name: Run build
+        run: npm run build
+
+      - name: Deploy to gh-pages
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Clone gh-pages branch
+          git fetch origin gh-pages:gh-pages || git checkout --orphan gh-pages
+          git worktree add gh-pages-dir gh-pages
+          
+          # Remove assets folder from gh-pages
+          rm -rf gh-pages-dir/assets
+          
+          # Copy built files to gh-pages
+          cp -r assets gh-pages-dir/
+          cp -r public gh-pages-dir/
+          cp index.html gh-pages-dir/
+          
+          # Commit and push
+          cd gh-pages-dir
+          git add -A
+          git diff --staged --quiet || git commit -m "Deploy from main branch - ${{ github.sha }}"
+          git push origin gh-pages
