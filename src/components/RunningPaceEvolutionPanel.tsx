@@ -243,17 +243,6 @@ export function RunningPaceEvolutionPanel() {
 		);
 	}, [activities, selectedRange]);
 
-	const daysUntilRace = useMemo(() => {
-		if (!userProfile.raceDate) return null;
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
-		const raceDate = new Date(userProfile.raceDate);
-		raceDate.setHours(0, 0, 0, 0);
-		const diffTime = raceDate.getTime() - today.getTime();
-		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-		return diffDays;
-	}, [userProfile.raceDate]);
-
 	const targetPace = useMemo(() => {
 		if (!userProfile.raceGoal || !userProfile.raceTimeGoal) return null;
 		const distanceKm = getRaceDistanceKm(userProfile.raceGoal);
