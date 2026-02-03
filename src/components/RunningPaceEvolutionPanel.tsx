@@ -4,12 +4,18 @@ import {
 	Legend,
 	Line,
 	LineChart,
+	ReferenceLine,
 	ResponsiveContainer,
 	Tooltip,
 	XAxis,
 	YAxis,
 } from 'recharts';
-import { ActivityType, type Cardio, useUserData } from '../hooks/useUserData';
+import {
+	ActivityType,
+	type Cardio,
+	type RaceGoal,
+	useUserData,
+} from '../hooks/useUserData';
 import { Highlight } from './Highlight';
 import { HighlightGroup } from './HighlightGroup';
 import { Panel } from './Panel';
@@ -47,6 +53,33 @@ function formatTime(totalMinutes: number): string {
 	const minutes = Math.floor(totalMinutes % 60);
 	const seconds = Math.round((totalMinutes - Math.floor(totalMinutes)) * 60);
 	return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function getRaceDistanceKm(raceGoal: RaceGoal): number {
+	switch (raceGoal) {
+		case '10K':
+			return 10;
+		case 'HalfMarathon':
+			return 21.0975;
+		case 'FullMarathon':
+			return 42.195;
+	}
+}
+
+function parseRaceTimeToMinutes(raceTimeGoal: string): number | null {
+	// Format: H:MM:SS or HH:MM:SS
+	const parts = raceTimeGoal.split(':');
+	if (parts.length !== 3) return null;
+
+	const hours = Number.parseInt(parts[0], 10);
+	const minutes = Number.parseInt(parts[1], 10);
+	const seconds = Number.parseInt(parts[2], 10);
+
+	if (Number.isNaN(hours) || Number.isNaN(minutes) || Number.isNaN(seconds)) {
+		return null;
+	}
+
+	return hours * 60 + minutes + seconds / 60;
 }
 
 interface CustomTooltipProps {
@@ -97,7 +130,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
 }
 
 export function RunningPaceEvolutionPanel() {
-	const { activities, isLoading } = useUserData();
+	const { activities, isLoading, userProfile } = useUserData();
 	const [selectedRange, setSelectedRange] = useState<TimeRange>('1month');
 
 	const avgPaceLast30Days = useMemo(() => {
@@ -210,6 +243,25 @@ export function RunningPaceEvolutionPanel() {
 		);
 	}, [activities, selectedRange]);
 
+	const daysUntilRace = useMemo(() => {
+		if (!userProfile.raceDate) return null;
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		const raceDate = new Date(userProfile.raceDate);
+		raceDate.setHours(0, 0, 0, 0);
+		const diffTime = raceDate.getTime() - today.getTime();
+		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+		return diffDays;
+	}, [userProfile.raceDate]);
+
+	const targetPace = useMemo(() => {
+		if (!userProfile.raceGoal || !userProfile.raceTimeGoal) return null;
+		const distanceKm = getRaceDistanceKm(userProfile.raceGoal);
+		const totalMinutes = parseRaceTimeToMinutes(userProfile.raceTimeGoal);
+		if (totalMinutes === null) return null;
+		return totalMinutes / distanceKm;
+	}, [userProfile.raceGoal, userProfile.raceTimeGoal]);
+
 	const timeRangeFilter = (
 		<TimeframeFilter
 			value={selectedRange}
@@ -220,7 +272,7 @@ export function RunningPaceEvolutionPanel() {
 
 	if (isLoading) {
 		return (
-			<Panel title="Running Pace Evolution" headerActions={timeRangeFilter}>
+			<Panel title="Running Evolution" headerActions={timeRangeFilter}>
 				<div className="h-64 flex items-center justify-center text-gray-400">
 					Loading...
 				</div>
@@ -230,7 +282,22 @@ export function RunningPaceEvolutionPanel() {
 
 	if (chartData.length === 0) {
 		return (
-			<Panel title="Running Pace Evolution" headerActions={timeRangeFilter}>
+			<Panel title="Running Evolution" headerActions={timeRangeFilter}>
+				<HighlightGroup>
+					<Highlight value="N/A" label="Average pace (km)" />
+					<Highlight
+						value={
+							targetPace !== null ? `${formatPace(targetPace)} min` : 'N/A'
+						}
+						label="Target Pace (km)"
+					/>
+					<Highlight value="N/A" label="Projected 1/2 Marathon" />
+					<Highlight value="N/A" label="Projected Full Marathon" />
+					<Highlight
+						value={daysUntilRace !== null ? `${daysUntilRace} days` : 'N/A'}
+						label="Until Race Day"
+					/>
+				</HighlightGroup>
 				<div className="h-64 flex items-center justify-center text-gray-400">
 					No running activities yet
 				</div>
@@ -239,12 +306,18 @@ export function RunningPaceEvolutionPanel() {
 	}
 
 	return (
-		<Panel title="Running Pace Evolution" headerActions={timeRangeFilter}>
+		<Panel title="Running Evolution" headerActions={timeRangeFilter}>
 			{avgPaceLast30Days !== null && (
 				<HighlightGroup>
 					<Highlight
 						value={`${formatPace(avgPaceLast30Days)} min`}
 						label="Average pace (km)"
+					/>
+					<Highlight
+						value={
+							targetPace !== null ? `${formatPace(targetPace)} min` : 'N/A'
+						}
+						label="Target Pace (km)"
 					/>
 					<Highlight
 						value={formatTime(avgPaceLast30Days * 21.0975)}
@@ -253,6 +326,10 @@ export function RunningPaceEvolutionPanel() {
 					<Highlight
 						value={formatTime(avgPaceLast30Days * 42.195)}
 						label="Projected Full Marathon"
+					/>
+					<Highlight
+						value={daysUntilRace !== null ? `${daysUntilRace} days` : 'N/A'}
+						label="Until Race Day"
 					/>
 				</HighlightGroup>
 			)}
@@ -274,6 +351,7 @@ export function RunningPaceEvolutionPanel() {
 							tickLine={{ stroke: '#4b5563' }}
 							axisLine={{ stroke: '#4b5563' }}
 							reversed
+							domain={[2 + 50 / 60, 8]}
 							tickFormatter={(value) => formatPace(value)}
 							label={{
 								value: 'Pace (min/km)',
@@ -290,6 +368,20 @@ export function RunningPaceEvolutionPanel() {
 								<span className="text-gray-300">{value}</span>
 							)}
 						/>
+						{targetPace !== null && (
+							<ReferenceLine
+								y={targetPace}
+								stroke="#f59e0b"
+								strokeWidth={2}
+								strokeDasharray="8 4"
+								label={{
+									value: `Target: ${formatPace(targetPace)}`,
+									fill: '#f59e0b',
+									fontSize: 12,
+									position: 'right',
+								}}
+							/>
+						)}
 						<Line
 							type="monotone"
 							dataKey="roadRunPace"

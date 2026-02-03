@@ -3,6 +3,7 @@ import { RunningPaceEvolutionPanel } from '../components/RunningPaceEvolutionPan
 import { StrengthEvolutionPanel } from '../components/StrengthEvolutionPanel';
 import { TodaysTrainingSessionPanel } from '../components/TodaysTrainingSessionPanel';
 import { TrainingConsistencyPanel } from '../components/TrainingConsistencyPanel';
+import { VolumePlanPanel } from '../components/VolumePlanPanel';
 import { WeightEvolutionPanel } from '../components/WeightEvolutionPanel';
 
 export function HomePage() {
@@ -11,6 +12,7 @@ export function HomePage() {
 			<div className="max-w-7xl mx-auto">
 				<div className="grid grid-cols-1 gap-6">
 					<TodaysTrainingSessionPanel />
+					<VolumePlanPanel />
 					<TrainingConsistencyPanel />
 					<DietConsistencyPanel />
 					<RunningPaceEvolutionPanel />

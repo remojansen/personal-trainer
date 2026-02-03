@@ -6,6 +6,7 @@ import {
 	useEffect,
 	useState,
 } from 'react';
+import type { EffortType } from '../data/effort';
 import {
 	deleteActivity as deleteActivityFromDB,
 	deleteDietEntry as deleteDietEntryFromDB,
@@ -32,6 +33,8 @@ import {
 } from './db';
 import { updateLocalModified } from './useBackup';
 
+export type RaceGoal = '10K' | 'HalfMarathon' | 'FullMarathon';
+
 export interface UserProfile {
 	name: string | null;
 	heightCm: number | null;
@@ -41,6 +44,9 @@ export interface UserProfile {
 	targetWeightLossPerWeekKg: number | null;
 	strengthTrainingRepetitions: number | null;
 	strengthTrainingSets: number | null;
+	raceGoal: RaceGoal | null;
+	raceTimeGoal: string | null;
+	raceDate: string | null;
 	schedule: Schedule;
 }
 
@@ -86,6 +92,7 @@ export interface Cardio extends BaseActivity {
 		| typeof ActivityType.RoadCycle
 		| typeof ActivityType.IndoorCycle;
 	distanceInKm: number;
+	effort?: EffortType;
 }
 
 export const RepetitionType = {
@@ -235,6 +242,9 @@ const DEFAULT_USER_PROFILE: UserProfile = {
 	targetWeightLossPerWeekKg: null,
 	strengthTrainingRepetitions: null,
 	strengthTrainingSets: null,
+	raceGoal: null,
+	raceTimeGoal: null,
+	raceDate: null,
 	schedule: DEFAULT_SCHEDULE,
 };
 

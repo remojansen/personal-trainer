@@ -1,5 +1,11 @@
-import type { UserProfile } from '../hooks/useUserData';
+import type { RaceGoal, UserProfile } from '../hooks/useUserData';
 import { Button } from './Button';
+
+const RACE_GOAL_LABELS: Record<RaceGoal, string> = {
+	'10K': '10K',
+	HalfMarathon: '1/2 Marathon',
+	FullMarathon: 'Full Marathon',
+};
 
 interface UserProfileFormProps {
 	userProfile: UserProfile;
@@ -178,6 +184,69 @@ export function UserProfileForm({
 						Female
 					</Button>
 				</div>
+			</div>
+
+			<div>
+				<span className="block text-sm font-medium text-gray-300 mb-2">
+					Race Distance Goal
+				</span>
+				<div className="flex gap-4">
+					{(['10K', 'HalfMarathon', 'FullMarathon'] as const).map((goal) => (
+						<Button
+							key={goal}
+							color="purple"
+							size="md"
+							active={userProfile.raceGoal === goal}
+							onClick={() => onChange({ ...userProfile, raceGoal: goal })}
+							className="flex-1"
+						>
+							{RACE_GOAL_LABELS[goal]}
+						</Button>
+					))}
+				</div>
+			</div>
+
+			<div>
+				<label
+					htmlFor="raceTimeGoal"
+					className="block text-sm font-medium text-gray-300 mb-2"
+				>
+					Race Time Goal
+				</label>
+				<input
+					type="text"
+					id="raceTimeGoal"
+					value={userProfile.raceTimeGoal ?? ''}
+					onChange={(e) =>
+						onChange({
+							...userProfile,
+							raceTimeGoal: e.target.value || null,
+						})
+					}
+					className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white placeholder-gray-400"
+					placeholder="2:59:59"
+				/>
+			</div>
+
+			<div>
+				<label
+					htmlFor="raceDate"
+					className="block text-sm font-medium text-gray-300 mb-2"
+				>
+					Race Date
+				</label>
+				<input
+					type="date"
+					id="raceDate"
+					value={userProfile.raceDate ?? ''}
+					onChange={(e) =>
+						onChange({
+							...userProfile,
+							raceDate: e.target.value || null,
+						})
+					}
+					className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg text-white"
+				/>
 			</div>
 
 			<div>

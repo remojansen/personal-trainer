@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { IoAdd, IoSettingsSharp } from 'react-icons/io5';
+import { IoAddCircleSharp, IoSettingsSharp } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { useUserData } from '../hooks/useUserData';
 import { Button } from './Button';
@@ -134,9 +134,9 @@ export function Navbar() {
 								<button
 									type="button"
 									onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-									className="text-gray-300 hover:text-white"
+									className="flex items-center justify-center h-6 w-6 text-gray-300 hover:text-white"
 								>
-									<IoAdd className="h-6 w-6" />
+									<IoAddCircleSharp className="h-6 w-6" />
 								</button>
 								{isDropdownOpen && (
 									<div className="absolute right-0 mt-2 w-40 bg-gray-800 border border-gray-700 rounded-lg shadow-lg overflow-hidden z-50">
@@ -157,7 +157,10 @@ export function Navbar() {
 									</div>
 								)}
 							</div>
-							<Link to="/settings" className="text-gray-300 hover:text-white">
+							<Link
+								to="/settings"
+								className="flex items-center justify-center h-6 w-6 text-gray-300 hover:text-white"
+							>
 								<IoSettingsSharp className="h-6 w-6" />
 							</Link>
 						</div>

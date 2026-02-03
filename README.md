@@ -6,7 +6,7 @@ A personal fitness tracking PWA for monitoring running pace, strength training, 
 
 - **Training Schedule**: Configure weekly workout plans with cardio and strength activities
 - **Activity Tracking**: Log runs, swims, cycling, and strength training sessions
-- **Progress Charts**: Visualize running pace evolution, weight trends, and strength gains
+- **Progress Charts**: Visualize Running Evolution, weight trends, and strength gains
 - **Diet Tracking**: Monitor daily calorie intake
 - **Offline-First**: All data stored locally in IndexedDB
 - **Optional Backup**: Sync data via File System Access API to a local folder

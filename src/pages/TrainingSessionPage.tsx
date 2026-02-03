@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Modal } from '../components/Modal';
 import { Panel } from '../components/Panel';
+import { type EffortType, effortZones } from '../data/effort';
+import {
+	calculateVolumeRecommendation,
+	type VolumeRecommendation,
+} from '../data/volume';
 import {
 	type Activity,
 	ActivityType,
@@ -88,6 +93,56 @@ const CARDIO_TYPES: Set<ActivityTypeKey> = new Set([
 	ActivityType.IndoorCycle,
 ]);
 
+const EFFORT_TYPES: EffortType[] = [
+	'WarmUp',
+	'FatBurn',
+	'Aerobic',
+	'Anaerobic',
+	'VO2Max',
+];
+
+const EFFORT_LABELS: Record<EffortType, string> = {
+	VO2Max: 'VO2 Max',
+	Anaerobic: 'Anaerobic',
+	Aerobic: 'Aerobic',
+	FatBurn: 'Fat Burn',
+	WarmUp: 'Warm Up',
+};
+
+function getAgeFromDOB(dob: string | null): number {
+	if (!dob) return 30; // default age
+	const birthDate = new Date(dob);
+	const today = new Date();
+	let age = today.getFullYear() - birthDate.getFullYear();
+	const monthDiff = today.getMonth() - birthDate.getMonth();
+	if (
+		monthDiff < 0 ||
+		(monthDiff === 0 && today.getDate() < birthDate.getDate())
+	) {
+		age--;
+	}
+	return age;
+}
+
+function getClosestAge(age: number): number {
+	const availableAges = [20, 25, 30, 35, 40, 45, 50, 55, 65, 70];
+	return availableAges.reduce((prev, curr) =>
+		Math.abs(curr - age) < Math.abs(prev - age) ? curr : prev,
+	);
+}
+
+function getEffortRangeLabel(effort: EffortType, dob: string | null): string {
+	const age = getAgeFromDOB(dob);
+	const closestAge = getClosestAge(age);
+	const zone = effortZones.find(
+		(z) => z.age === closestAge && z.effort === effort,
+	);
+	if (zone) {
+		return `${EFFORT_LABELS[effort]} (${zone.heartRateMin}-${zone.heartRateMax})`;
+	}
+	return EFFORT_LABELS[effort];
+}
+
 function getTodayKey(): keyof Schedule {
 	const dayIndex = new Date().getDay();
 	return DAYS_OF_WEEK[dayIndex] as keyof Schedule;
@@ -105,23 +160,29 @@ interface CardioFormData {
 	distanceKm: string;
 	durationMinutes: string;
 	durationSeconds: string;
+	effort: EffortType | null;
 }
 
 interface CardioActivityPanelProps {
 	activityType: ActivityTypeKey;
 	onSave: (activity: Cardio) => void;
 	isCompleted: boolean;
+	userProfile: UserProfile;
+	volumeRecommendation: VolumeRecommendation | null;
 }
 
 function CardioActivityPanel({
 	activityType,
 	onSave,
 	isCompleted,
+	userProfile,
+	volumeRecommendation,
 }: CardioActivityPanelProps) {
 	const [formData, setFormData] = useState<CardioFormData>({
 		distanceKm: '',
 		durationMinutes: '',
 		durationSeconds: '',
+		effort: null,
 	});
 
 	const handleSubmit = (e: React.FormEvent) => {
@@ -137,6 +198,7 @@ function CardioActivityPanel({
 			type: activityType as Cardio['type'],
 			distanceInKm,
 			durationInSeconds,
+			...(formData.effort && { effort: formData.effort }),
 		};
 
 		onSave(activity);
@@ -153,8 +215,61 @@ function CardioActivityPanel({
 		);
 	}
 
+	const isRunning =
+		activityType === ActivityType.RoadRun ||
+		activityType === ActivityType.TreadmillRun;
+
 	return (
 		<Panel title={ACTIVITY_LABELS[activityType]}>
+			{isRunning && volumeRecommendation && (
+				<div className="mb-4 p-4 bg-purple-900/30 border border-purple-700 rounded-lg">
+					<h4 className="text-purple-300 font-medium mb-2 flex items-center gap-2">
+						<span>📊</span> Volume Recommendation
+					</h4>
+					<div className="grid grid-cols-2 gap-3 text-sm">
+						<div>
+							<span className="text-gray-400">Weekly target:</span>
+							<span className="text-white font-semibold ml-2">
+								{volumeRecommendation.weeklyVolumeKm} km
+							</span>
+						</div>
+						<div>
+							<span className="text-gray-400">Long run:</span>
+							<span className="text-white font-semibold ml-2">
+								{volumeRecommendation.longRunKm} km
+							</span>
+						</div>
+						<div>
+							<span className="text-gray-400">Last week:</span>
+							<span className="text-white font-semibold ml-2">
+								{volumeRecommendation.lastWeekVolumeKm} km
+							</span>
+						</div>
+						<div>
+							<span className="text-gray-400">Weeks to race:</span>
+							<span className="text-white font-semibold ml-2">
+								{volumeRecommendation.weeksUntilRace}
+							</span>
+						</div>
+					</div>
+					{volumeRecommendation.isTaperWeek && (
+						<p className="mt-2 text-yellow-400 text-sm">
+							⚡ Taper week - reduce volume to arrive fresh!
+						</p>
+					)}
+					{volumeRecommendation.isCutbackWeek && (
+						<p className="mt-2 text-blue-400 text-sm">
+							🔄 Cutback week - recovery before next build phase
+						</p>
+					)}
+					{volumeRecommendation.currentWeek ===
+						volumeRecommendation.peakWeek && (
+						<p className="mt-2 text-green-400 text-sm">
+							🏔️ Peak week - your highest volume week!
+						</p>
+					)}
+				</div>
+			)}
 			<form onSubmit={handleSubmit} className="space-y-4">
 				<div>
 					<label
@@ -218,7 +333,28 @@ function CardioActivityPanel({
 							placeholder="e.g., 45"
 						/>
 					</div>
-				</div>
+				</div>{' '}
+				<div>
+					<span className="block text-sm font-medium text-gray-300 mb-2">
+						Effort Level
+					</span>
+					<div className="flex gap-2 flex-wrap">
+						{EFFORT_TYPES.map((effort) => (
+							<button
+								key={effort}
+								type="button"
+								onClick={() => setFormData({ ...formData, effort })}
+								className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+									formData.effort === effort
+										? 'bg-purple-600 text-white'
+										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+								}`}
+							>
+								{getEffortRangeLabel(effort, userProfile.dateOfBirth)}
+							</button>
+						))}
+					</div>
+				</div>{' '}
 				<Button type="submit" variant="primary" color="purple" fullWidth>
 					Save Activity
 				</Button>
@@ -460,6 +596,16 @@ export function TrainingSessionPage() {
 	const navigate = useNavigate();
 	const { userProfile, activities, addActivity } = useUserData();
 
+	const volumeRecommendation = useMemo(() => {
+		if (!userProfile.raceGoal || !userProfile.raceDate) return null;
+		return calculateVolumeRecommendation(
+			new Date(),
+			userProfile.raceGoal,
+			userProfile.raceDate,
+			activities,
+		);
+	}, [userProfile.raceGoal, userProfile.raceDate, activities]);
+
 	const todayKey = getTodayKey();
 	const todayDateStr = getTodayDateStr();
 
@@ -535,6 +681,8 @@ export function TrainingSessionPage() {
 										activityType={activityType}
 										onSave={handleSaveActivity}
 										isCompleted={isCompleted}
+										userProfile={userProfile}
+										volumeRecommendation={volumeRecommendation}
 									/>
 								);
 							}

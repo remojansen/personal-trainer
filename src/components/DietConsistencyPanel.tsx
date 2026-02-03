@@ -51,6 +51,7 @@ function calculateDailyCalorieLimit(
 	const bmr = calculateBMR(currentWeightKg, heightCm, age, sex);
 	// TDEE with sedentary activity level (BMR * 1.2)
 	const tdee = bmr * 1.2;
+	const roundedTdee = Math.round(tdee);
 
 	// 1 kg of body fat = ~7700 calories
 	// Weekly deficit needed = targetWeightLossPerWeekKg * 7700 calories
@@ -59,10 +60,14 @@ function calculateDailyCalorieLimit(
 
 	// Daily limit = TDEE - deficit needed
 	// Clamp to realistic human calorie limits (1200-3500 kcal)
-	const rawDailyLimit = Math.round(tdee - dailyDeficit);
+	const rawDailyLimit = Math.round(roundedTdee - dailyDeficit);
 	const dailyLimit = Math.max(1200, Math.min(3500, rawDailyLimit));
 
-	return { dailyLimit, deficit: Math.round(dailyDeficit) };
+	// Calculate displayed deficit from rounded values to ensure consistency
+	// (so dailyLimit + deficit = roundedTdee)
+	const deficit = roundedTdee - dailyLimit;
+
+	return { dailyLimit, deficit };
 }
 
 export function DietConsistencyPanel() {

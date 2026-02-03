@@ -24,7 +24,7 @@ const root = document.getElementById('root');
 if (root) {
 	createRoot(root).render(
 		<StrictMode>
-			<BrowserRouter>
+			<BrowserRouter basename={import.meta.env.BASE_URL}>
 				<UserDataProvider>
 					<App />
 				</UserDataProvider>

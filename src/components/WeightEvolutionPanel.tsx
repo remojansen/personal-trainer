@@ -676,7 +676,7 @@ export function WeightEvolutionPanel() {
 						value={
 							weightStats.kgsLost90Days !== null
 								? `${weightStats.kgsLost90Days >= 0 ? '' : '+'}${Math.abs(weightStats.kgsLost90Days).toFixed(1)} kg`
-								: '—'
+								: '0 kg'
 						}
 						label="Lost (90 days)"
 					/>
