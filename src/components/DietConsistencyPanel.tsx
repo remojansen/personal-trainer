@@ -1,38 +1,17 @@
 import { useMemo, useState } from 'react';
 import { type DietEntry, useUserData } from '../hooks/useUserData';
-import { Button } from './Button';
 import { Highlight } from './Highlight';
 import { HighlightGroup } from './HighlightGroup';
 import { Panel } from './Panel';
+import {
+	getDaysForTimeRange,
+	TimeframeFilter,
+	type TimeRange,
+} from './TimeframeFilter';
 
 interface DayData {
 	date: Date;
 	dateStr: string;
-}
-
-type TimeRange = '1month' | '3months' | '6months' | '1year' | 'all';
-
-const TIME_RANGE_LABELS: Record<TimeRange, string> = {
-	'1month': '1 Month',
-	'3months': '3 Months',
-	'6months': '1/2 Year',
-	'1year': '1 Year',
-	all: 'All',
-};
-
-function getDaysForTimeRange(range: TimeRange): number {
-	switch (range) {
-		case '1month':
-			return 30;
-		case '3months':
-			return 90;
-		case '6months':
-			return 180;
-		case '1year':
-			return 365;
-		case 'all':
-			return 1000; // Large number to get all data
-	}
 }
 
 // Calculate age from date of birth
@@ -267,25 +246,17 @@ export function DietConsistencyPanel() {
 		};
 	}, [statsEntries, userProfile, selectedDays, dietEntriesMap]);
 
-	const timeRangeButtons = (
-		<div className="flex gap-2">
-			{(Object.keys(TIME_RANGE_LABELS) as TimeRange[]).map((range) => (
-				<Button
-					key={range}
-					variant={selectedRange === range ? 'primary' : 'secondary'}
-					color="blue"
-					onClick={() => setSelectedRange(range)}
-					disabled={isLoading || isCalculating}
-				>
-					{TIME_RANGE_LABELS[range]}
-				</Button>
-			))}
-		</div>
+	const timeRangeFilter = (
+		<TimeframeFilter
+			value={selectedRange}
+			onChange={setSelectedRange}
+			disabled={isLoading || isCalculating}
+		/>
 	);
 
 	if (isLoading) {
 		return (
-			<Panel title="Diet Consistency" headerActions={timeRangeButtons}>
+			<Panel title="Diet Consistency" headerActions={timeRangeFilter}>
 				<div className="h-64 flex items-center justify-center text-gray-400">
 					Loading...
 				</div>
@@ -295,7 +266,7 @@ export function DietConsistencyPanel() {
 
 	if (!calorieData) {
 		return (
-			<Panel title="Diet Consistency" headerActions={timeRangeButtons}>
+			<Panel title="Diet Consistency" headerActions={timeRangeFilter}>
 				<div className="h-64 flex items-center justify-center text-gray-400">
 					Set your target weight and target weight loss per week in Settings,
 					and add weight measurements to track calorie intake.
@@ -306,7 +277,7 @@ export function DietConsistencyPanel() {
 
 	if (isCalculating) {
 		return (
-			<Panel title="Diet Consistency" headerActions={timeRangeButtons}>
+			<Panel title="Diet Consistency" headerActions={timeRangeFilter}>
 				<div className="h-64 flex items-center justify-center text-gray-400">
 					Calculating...
 				</div>
@@ -315,7 +286,7 @@ export function DietConsistencyPanel() {
 	}
 
 	return (
-		<Panel title="Diet Consistency" headerActions={timeRangeButtons}>
+		<Panel title="Diet Consistency" headerActions={timeRangeFilter}>
 			<HighlightGroup>
 				<Highlight
 					value={`${calorieData.dailyLimit} kcal`}

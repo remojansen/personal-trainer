@@ -16,31 +16,11 @@ import { Highlight } from './Highlight';
 import { HighlightGroup } from './HighlightGroup';
 import { Modal } from './Modal';
 import { Panel } from './Panel';
-
-type TimeRange = '1month' | '3months' | '6months' | '1year' | 'all';
-
-const TIME_RANGE_LABELS: Record<TimeRange, string> = {
-	'1month': '1 Month',
-	'3months': '3 Months',
-	'6months': '1/2 Year',
-	'1year': '1 Year',
-	all: 'All',
-};
-
-function getDaysForTimeRange(range: TimeRange): number {
-	switch (range) {
-		case '1month':
-			return 30;
-		case '3months':
-			return 90;
-		case '6months':
-			return 180;
-		case '1year':
-			return 365;
-		case 'all':
-			return 10000; // Large number to get all data
-	}
-}
+import {
+	getDaysForTimeRange,
+	TimeframeFilter,
+	type TimeRange,
+} from './TimeframeFilter';
 
 type BMICategory =
 	| 'underweight'
@@ -295,7 +275,7 @@ export function WeightEvolutionPanel() {
 		setShowLogWeightModal(false);
 	};
 
-	const openLogWeightModal = () => {
+	const _openLogWeightModal = () => {
 		setNewWeight('');
 		setNewBodyFat('');
 		setBodyFatMode('unknown');
@@ -304,34 +284,12 @@ export function WeightEvolutionPanel() {
 		setShowLogWeightModal(true);
 	};
 
-	const timeRangeButtons = (
-		<div className="flex gap-2">
-			{(Object.keys(TIME_RANGE_LABELS) as TimeRange[]).map((range) => (
-				<Button
-					key={range}
-					variant={selectedRange === range ? 'primary' : 'secondary'}
-					color="blue"
-					onClick={() => setSelectedRange(range)}
-					disabled={isLoading || isCalculating}
-				>
-					{TIME_RANGE_LABELS[range]}
-				</Button>
-			))}
-		</div>
-	);
-
 	const headerActions = (
-		<div className="flex gap-2 items-center">
-			{timeRangeButtons}
-			<Button
-				variant="primary"
-				color="blue"
-				onClick={openLogWeightModal}
-				disabled={isLoading || isCalculating}
-			>
-				Log Weight
-			</Button>
-		</div>
+		<TimeframeFilter
+			value={selectedRange}
+			onChange={setSelectedRange}
+			disabled={isLoading || isCalculating}
+		/>
 	);
 
 	const chartData = useMemo(() => {

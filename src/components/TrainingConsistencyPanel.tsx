@@ -5,10 +5,14 @@ import {
 	type Schedule,
 	useUserData,
 } from '../hooks/useUserData';
-import { Button } from './Button';
 import { Highlight } from './Highlight';
 import { HighlightGroup } from './HighlightGroup';
 import { Panel } from './Panel';
+import {
+	getDaysForTimeRange,
+	TimeframeFilter,
+	type TimeRange,
+} from './TimeframeFilter';
 
 const DAYS_OF_WEEK = [
 	'sunday',
@@ -44,31 +48,6 @@ interface DayData {
 	date: Date;
 	dateStr: string;
 	dayKey: keyof Schedule;
-}
-
-type TimeRange = '1month' | '3months' | '6months' | '1year' | 'all';
-
-const TIME_RANGE_LABELS: Record<TimeRange, string> = {
-	'1month': '1 Month',
-	'3months': '3 Months',
-	'6months': '1/2 Year',
-	'1year': '1 Year',
-	all: 'All',
-};
-
-function getDaysForTimeRange(range: TimeRange): number {
-	switch (range) {
-		case '1month':
-			return 30;
-		case '3months':
-			return 90;
-		case '6months':
-			return 180;
-		case '1year':
-			return 365;
-		case 'all':
-			return 1000; // Large number to get all data
-	}
 }
 
 export function TrainingConsistencyPanel() {
@@ -241,25 +220,17 @@ export function TrainingConsistencyPanel() {
 		activitiesMap,
 	]);
 
-	const timeRangeButtons = (
-		<div className="flex gap-2">
-			{(Object.keys(TIME_RANGE_LABELS) as TimeRange[]).map((range) => (
-				<Button
-					key={range}
-					variant={selectedRange === range ? 'primary' : 'secondary'}
-					color="blue"
-					onClick={() => setSelectedRange(range)}
-					disabled={isLoading || isCalculating}
-				>
-					{TIME_RANGE_LABELS[range]}
-				</Button>
-			))}
-		</div>
+	const timeRangeFilter = (
+		<TimeframeFilter
+			value={selectedRange}
+			onChange={setSelectedRange}
+			disabled={isLoading || isCalculating}
+		/>
 	);
 
 	if (isLoading) {
 		return (
-			<Panel title="Training Consistency" headerActions={timeRangeButtons}>
+			<Panel title="Training Consistency" headerActions={timeRangeFilter}>
 				<div className="h-64 flex items-center justify-center text-gray-400">
 					Loading...
 				</div>
@@ -269,7 +240,7 @@ export function TrainingConsistencyPanel() {
 
 	if (scheduledActivityTypes.length === 0) {
 		return (
-			<Panel title="Training Consistency" headerActions={timeRangeButtons}>
+			<Panel title="Training Consistency" headerActions={timeRangeFilter}>
 				<div className="h-64 flex items-center justify-center text-gray-400">
 					Set up your training schedule in Settings to track consistency
 				</div>
@@ -279,7 +250,7 @@ export function TrainingConsistencyPanel() {
 
 	if (isCalculating) {
 		return (
-			<Panel title="Training Consistency" headerActions={timeRangeButtons}>
+			<Panel title="Training Consistency" headerActions={timeRangeFilter}>
 				<div className="h-64 flex items-center justify-center text-gray-400">
 					Calculating...
 				</div>
@@ -288,7 +259,7 @@ export function TrainingConsistencyPanel() {
 	}
 
 	return (
-		<Panel title="Training Consistency" headerActions={timeRangeButtons}>
+		<Panel title="Training Consistency" headerActions={timeRangeFilter}>
 			<HighlightGroup>
 				<Highlight value={streaks.currentStreak} label="Current Streak" />
 				<Highlight value={streaks.longestStreak} label="Longest Streak" />
