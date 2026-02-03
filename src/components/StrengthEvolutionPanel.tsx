@@ -147,8 +147,7 @@ export function StrengthEvolutionPanel() {
 
 			for (const repType of Object.values(RepetitionType)) {
 				const repWeights = weights[repType];
-				point[repType] =
-					repWeights.length > 0 ? Math.max(...repWeights) : null;
+				point[repType] = repWeights.length > 0 ? Math.max(...repWeights) : null;
 			}
 
 			// Only include date if it has at least one weight value
@@ -190,7 +189,9 @@ export function StrengthEvolutionPanel() {
 			// Get all activities for this muscle group
 			const muscleActivities = strengthActivities
 				.filter((a) => a.type === muscleType)
-				.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+				.sort(
+					(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+				);
 
 			if (muscleActivities.length === 0) {
 				return {
@@ -209,7 +210,8 @@ export function StrengthEvolutionPanel() {
 			const firstWeights = firstDayActivities.flatMap((a) =>
 				a.repetitions.filter((r) => r.weightKg > 0).map((r) => r.weightKg),
 			);
-			const firstWeight = firstWeights.length > 0 ? Math.max(...firstWeights) : null;
+			const firstWeight =
+				firstWeights.length > 0 ? Math.max(...firstWeights) : null;
 
 			// Get max weight from last day
 			const lastDayActivities = muscleActivities.filter(
@@ -218,7 +220,8 @@ export function StrengthEvolutionPanel() {
 			const lastWeights = lastDayActivities.flatMap((a) =>
 				a.repetitions.filter((r) => r.weightKg > 0).map((r) => r.weightKg),
 			);
-			const lastWeight = lastWeights.length > 0 ? Math.max(...lastWeights) : null;
+			const lastWeight =
+				lastWeights.length > 0 ? Math.max(...lastWeights) : null;
 
 			// Calculate percentage gain (default to 0 if not enough data)
 			let gainPercent = 0;

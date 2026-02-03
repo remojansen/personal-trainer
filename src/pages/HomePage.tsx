@@ -1,9 +1,9 @@
-import { TrainingConsistencyPanel } from '../components/TrainingConsistencyPanel';
+import { DietConsistencyPanel } from '../components/DietConsistencyPanel';
 import { RunningPaceEvolutionPanel } from '../components/RunningPaceEvolutionPanel';
 import { StrengthEvolutionPanel } from '../components/StrengthEvolutionPanel';
 import { TodaysTrainingSessionPanel } from '../components/TodaysTrainingSessionPanel';
+import { TrainingConsistencyPanel } from '../components/TrainingConsistencyPanel';
 import { WeightEvolutionPanel } from '../components/WeightEvolutionPanel';
-import { DietConsistencyPanel } from '../components/DietConsistencyPanel';
 
 export function HomePage() {
 	return (

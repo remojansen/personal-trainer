@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { IoMdSettings } from 'react-icons/io';
 import { Schedule } from '../components/Schedule';
 import { UserProfileForm } from '../components/UserProfileForm';
 import type { Schedule as ScheduleType } from '../hooks/useUserData';

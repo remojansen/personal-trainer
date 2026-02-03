@@ -360,7 +360,9 @@ export function WeightEvolutionPanel() {
 
 		// Calculate weeks to target
 		const weeksToTarget =
-			kgsToTarget !== null && userProfile.targetWeightLossPerWeekKg !== null && userProfile.targetWeightLossPerWeekKg > 0
+			kgsToTarget !== null &&
+			userProfile.targetWeightLossPerWeekKg !== null &&
+			userProfile.targetWeightLossPerWeekKg > 0
 				? Math.ceil(kgsToTarget / userProfile.targetWeightLossPerWeekKg)
 				: null;
 
@@ -433,7 +435,11 @@ export function WeightEvolutionPanel() {
 			currentStreak,
 			longestStreak,
 		};
-	}, [chartData, userProfile.targetWeightKg, userProfile.targetWeightLossPerWeekKg]);
+	}, [
+		chartData,
+		userProfile.targetWeightKg,
+		userProfile.targetWeightLossPerWeekKg,
+	]);
 
 	if (isLoading) {
 		return (
@@ -655,31 +661,32 @@ export function WeightEvolutionPanel() {
 			>
 				<HighlightGroup>
 					<Highlight
-						value={weightStats.kgsLost90Days !== null
-							? `${weightStats.kgsLost90Days >= 0 ? '' : '+'}${Math.abs(weightStats.kgsLost90Days).toFixed(1)} kg`
-							: '—'}
+						value={
+							weightStats.kgsLost90Days !== null
+								? `${weightStats.kgsLost90Days >= 0 ? '' : '+'}${Math.abs(weightStats.kgsLost90Days).toFixed(1)} kg`
+								: '—'
+						}
 						label="Lost (90 days)"
 					/>
 					<Highlight
-						value={weightStats.kgsToTarget !== null
-							? `${weightStats.kgsToTarget.toFixed(1)} kg`
-							: '—'}
+						value={
+							weightStats.kgsToTarget !== null
+								? `${weightStats.kgsToTarget.toFixed(1)} kg`
+								: '—'
+						}
 						label="To Target"
 					/>
 					<Highlight
-						value={weightStats.weeksToTarget !== null && weightStats.weeksToTarget > 0
-							? `${weightStats.weeksToTarget}`
-							: '—'}
+						value={
+							weightStats.weeksToTarget !== null &&
+							weightStats.weeksToTarget > 0
+								? `${weightStats.weeksToTarget}`
+								: '—'
+						}
 						label="Weeks to Target"
 					/>
-					<Highlight
-						value={weightStats.currentStreak}
-						label="Current Streak"
-					/>
-					<Highlight
-						value={weightStats.longestStreak}
-						label="Longest Streak"
-					/>
+					<Highlight value={weightStats.currentStreak} label="Current Streak" />
+					<Highlight value={weightStats.longestStreak} label="Longest Streak" />
 				</HighlightGroup>
 				<div className="h-80 min-w-0 w-full">
 					<ResponsiveContainer width="100%" height="100%">

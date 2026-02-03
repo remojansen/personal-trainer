@@ -46,8 +46,7 @@ interface DayData {
 }
 
 export function TrainingConsistencyPanel() {
-	const { userProfile, activities, isLoading } =
-		useUserData();
+	const { userProfile, activities, isLoading } = useUserData();
 
 	const last30Days = useMemo(() => {
 		const days: DayData[] = [];
@@ -162,7 +161,8 @@ export function TrainingConsistencyPanel() {
 			let completed = 0;
 
 			for (const day of last30Days) {
-				const isScheduled = userProfile.schedule[day.dayKey].includes(activityType);
+				const isScheduled =
+					userProfile.schedule[day.dayKey].includes(activityType);
 				if (isScheduled) {
 					scheduled++;
 					const completedActivities = activitiesMap.get(day.dateStr);
@@ -208,14 +208,8 @@ export function TrainingConsistencyPanel() {
 	return (
 		<Panel title="Training Consistency">
 			<HighlightGroup>
-				<Highlight
-					value={streaks.currentStreak}
-					label="Current Streak"
-				/>
-				<Highlight
-					value={streaks.longestStreak}
-					label="Longest Streak"
-				/>
+				<Highlight value={streaks.currentStreak} label="Current Streak" />
+				<Highlight value={streaks.longestStreak} label="Longest Streak" />
 				<Highlight
 					value={`${last30DaysStats.distanceRunKm.toFixed(1)} km`}
 					label="Distance Run"
@@ -249,7 +243,10 @@ export function TrainingConsistencyPanel() {
 					</thead>
 					<tbody>
 						{activityStats.map((stat) => (
-							<tr key={stat.activityType} className="border-b border-gray-700/50">
+							<tr
+								key={stat.activityType}
+								className="border-b border-gray-700/50"
+							>
 								<td className="py-3 pr-4 text-sm text-gray-300">
 									{stat.label}
 								</td>

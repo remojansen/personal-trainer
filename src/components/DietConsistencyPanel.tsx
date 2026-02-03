@@ -102,8 +102,13 @@ export function DietConsistencyPanel() {
 		const latestStats = statsEntries.length > 0 ? statsEntries[0] : null;
 		const currentWeightKg = latestStats?.weightKg;
 
-		const { heightCm, dateOfBirth, sex, targetWeightKg, targetWeightLossPerWeekKg } =
-			userProfile;
+		const {
+			heightCm,
+			dateOfBirth,
+			sex,
+			targetWeightKg,
+			targetWeightLossPerWeekKg,
+		} = userProfile;
 
 		// Check if we have all the data needed to calculate calorie limit
 		if (
@@ -196,8 +201,8 @@ export function DietConsistencyPanel() {
 		return (
 			<Panel title="Diet Consistency">
 				<div className="h-64 flex items-center justify-center text-gray-400">
-					Set your target weight and target weight loss per week in Settings, and add weight
-					measurements to track calorie intake.
+					Set your target weight and target weight loss per week in Settings,
+					and add weight measurements to track calorie intake.
 				</div>
 			</Panel>
 		);
@@ -227,7 +232,10 @@ export function DietConsistencyPanel() {
 				onClose={() => setIsModalOpen(false)}
 				title="Log Meal"
 				primaryAction={{ label: 'Save', onClick: handleLogMeal }}
-				secondaryAction={{ label: 'Cancel', onClick: () => setIsModalOpen(false) }}
+				secondaryAction={{
+					label: 'Cancel',
+					onClick: () => setIsModalOpen(false),
+				}}
 			>
 				<div className="space-y-4">
 					<div>
