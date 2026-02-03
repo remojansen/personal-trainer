@@ -291,12 +291,9 @@ export function RunningPaceEvolutionPanel() {
 						}
 						label="Target Pace (km)"
 					/>
+					<Highlight value="N/A" label="Projected 10K" />
 					<Highlight value="N/A" label="Projected 1/2 Marathon" />
 					<Highlight value="N/A" label="Projected Full Marathon" />
-					<Highlight
-						value={daysUntilRace !== null ? `${daysUntilRace} days` : 'N/A'}
-						label="Until Race Day"
-					/>
 				</HighlightGroup>
 				<div className="h-64 flex items-center justify-center text-gray-400">
 					No running activities yet
@@ -320,16 +317,16 @@ export function RunningPaceEvolutionPanel() {
 						label="Target Pace (km)"
 					/>
 					<Highlight
+						value={formatTime(avgPaceLast30Days * 10)}
+						label="Projected 10K"
+					/>
+					<Highlight
 						value={formatTime(avgPaceLast30Days * 21.0975)}
 						label="Projected 1/2 Marathon"
 					/>
 					<Highlight
 						value={formatTime(avgPaceLast30Days * 42.195)}
 						label="Projected Full Marathon"
-					/>
-					<Highlight
-						value={daysUntilRace !== null ? `${daysUntilRace} days` : 'N/A'}
-						label="Until Race Day"
 					/>
 				</HighlightGroup>
 			)}
