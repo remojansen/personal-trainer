@@ -10,6 +10,7 @@ export function BackupSettingsPanel({
 }: BackupSettingsPanelProps) {
 	const {
 		isSupported,
+		isMobile,
 		hasFolderAccess,
 		folderName,
 		lastBackupDate,
@@ -65,8 +66,8 @@ export function BackupSettingsPanel({
 			<div className="bg-gray-800 rounded-lg p-4">
 				<h3 className="text-lg font-medium text-white mb-2">Cloud Backup</h3>
 				<p className="text-gray-400 text-sm">
-					Your browser does not support the File System Access API. Cloud backup
-					is available in Chrome, Edge, and other Chromium-based browsers.
+					Cloud backup isn't available in this browser. Please use Chrome, Edge,
+					or another Chromium-based browser on a computer for backup support.
 				</p>
 			</div>
 		);
@@ -86,6 +87,16 @@ export function BackupSettingsPanel({
 			{error && (
 				<div className="bg-red-900/50 border border-red-700 rounded-lg p-3">
 					<p className="text-red-300 text-sm">{error}</p>
+				</div>
+			)}
+
+			{isMobile && !hasFolderAccess && (
+				<div className="bg-yellow-900/50 border border-yellow-700 rounded-lg p-3">
+					<p className="text-yellow-300 text-sm">
+						<strong>Heads up:</strong> Backup may not work on phones or tablets.
+						If you run into issues, try setting up backup from a computer
+						instead.
+					</p>
 				</div>
 			)}
 

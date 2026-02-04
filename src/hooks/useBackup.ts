@@ -33,6 +33,7 @@ export interface BackupData {
 
 interface BackupState {
 	isSupported: boolean;
+	isMobile: boolean;
 	hasFolderAccess: boolean;
 	folderName: string | null;
 	lastBackupDate: string | null;
@@ -52,6 +53,13 @@ interface UseBackupReturn extends BackupState {
 // Check if File System Access API is supported
 export function isFileSystemAccessSupported(): boolean {
 	return 'showDirectoryPicker' in window;
+}
+
+// Check if we're on a mobile device (limited File System Access API support)
+export function isMobileDevice(): boolean {
+	return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+		navigator.userAgent,
+	);
 }
 
 // Store the folder handle in IndexedDB
@@ -157,6 +165,7 @@ async function writeBackupFile(
 export function useBackup(onDataRestored?: () => void): UseBackupReturn {
 	const [state, setState] = useState<BackupState>({
 		isSupported: isFileSystemAccessSupported(),
+		isMobile: isMobileDevice(),
 		hasFolderAccess: false,
 		folderName: null,
 		lastBackupDate: null,
@@ -254,6 +263,20 @@ export function useBackup(onDataRestored?: () => void): UseBackupReturn {
 				mode: 'readwrite',
 				startIn: 'documents',
 			});
+
+			// Verify we have write permission (mobile browsers may grant read-only)
+			const permission = await handle.queryPermission({ mode: 'readwrite' });
+			if (permission !== 'granted') {
+				// Try to request write permission explicitly
+				const requestedPermission = await handle.requestPermission({
+					mode: 'readwrite',
+				});
+				if (requestedPermission !== 'granted') {
+					throw new Error(
+						"This folder can't be used for backups because your device doesn't allow saving files to it. This is a common limitation on phones and tablets. Please try again from a computer (Mac, Windows, or Chromebook) for full backup support.",
+					);
+				}
+			}
 
 			await storeFolderHandle(handle);
 			setFolderHandle(handle);
