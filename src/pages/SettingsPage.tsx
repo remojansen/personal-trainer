@@ -74,6 +74,84 @@ export function SettingsPage() {
 
 				<div className="bg-gray-900 rounded-lg shadow p-6 mt-6">
 					<h2 className="text-xl font-semibold text-white mb-4">
+						Notifications
+					</h2>
+					<div className="space-y-4">
+						<div className="flex items-center justify-between">
+							<div>
+								<p className="text-white font-medium">
+									Calorie Intake Reminders
+								</p>
+								<p className="text-sm text-gray-400">
+									Remind me to log breakfast, lunch, and dinner
+								</p>
+							</div>
+							<button
+								type="button"
+								role="switch"
+								aria-checked={userProfile.calorieReminderEnabled !== false}
+								onClick={() =>
+									setUserProfile({
+										...userProfile,
+										calorieReminderEnabled:
+											userProfile.calorieReminderEnabled === false,
+									})
+								}
+								className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 ${
+									userProfile.calorieReminderEnabled !== false
+										? 'bg-purple-600'
+										: 'bg-gray-600'
+								}`}
+							>
+								<span
+									className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+										userProfile.calorieReminderEnabled !== false
+											? 'translate-x-5'
+											: 'translate-x-0'
+									}`}
+								/>
+							</button>
+						</div>
+						<div className="flex items-center justify-between">
+							<div>
+								<p className="text-white font-medium">
+									Weight Logging Reminders
+								</p>
+								<p className="text-sm text-gray-400">
+									Remind me to log my weight every 7 days
+								</p>
+							</div>
+							<button
+								type="button"
+								role="switch"
+								aria-checked={userProfile.weightReminderEnabled !== false}
+								onClick={() =>
+									setUserProfile({
+										...userProfile,
+										weightReminderEnabled:
+											userProfile.weightReminderEnabled === false,
+									})
+								}
+								className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 ${
+									userProfile.weightReminderEnabled !== false
+										? 'bg-purple-600'
+										: 'bg-gray-600'
+								}`}
+							>
+								<span
+									className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+										userProfile.weightReminderEnabled !== false
+											? 'translate-x-5'
+											: 'translate-x-0'
+									}`}
+								/>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<div className="bg-gray-900 rounded-lg shadow p-6 mt-6">
+					<h2 className="text-xl font-semibold text-white mb-4">
 						Backup & Sync
 					</h2>
 					<div className="bg-gray-800 border border-gray-700 rounded-lg p-4 mb-4">

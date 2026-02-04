@@ -222,11 +222,15 @@ export function WeightEvolutionPanel() {
 		return diffDays;
 	}, [statsEntries]);
 
+	// Show weight reminder (only if enabled in settings)
 	useEffect(() => {
+		// Default to true if not set (for backwards compatibility)
+		if (userProfile.weightReminderEnabled === false) return;
+
 		if (daysSinceLastStat !== null && daysSinceLastStat > 7) {
 			setShowReminderModal(true);
 		}
-	}, [daysSinceLastStat]);
+	}, [daysSinceLastStat, userProfile.weightReminderEnabled]);
 
 	const handleLogWeight = async () => {
 		setWeightError(null);

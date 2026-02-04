@@ -48,6 +48,9 @@ export interface UserProfile {
 	raceTimeGoal: string | null;
 	raceDate: string | null;
 	schedule: Schedule;
+	// Notification settings
+	calorieReminderEnabled?: boolean;
+	weightReminderEnabled?: boolean;
 }
 
 export const ActivityType = {
@@ -282,6 +285,8 @@ const DEFAULT_USER_PROFILE: UserProfile = {
 	raceTimeGoal: null,
 	raceDate: null,
 	schedule: DEFAULT_SCHEDULE,
+	calorieReminderEnabled: true,
+	weightReminderEnabled: true,
 };
 
 const ACTIVITIES_PAGE_SIZE = 50;

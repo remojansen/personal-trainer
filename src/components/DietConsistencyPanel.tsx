@@ -178,8 +178,11 @@ export function DietConsistencyPanel() {
 		};
 	}, [dietEntries]);
 
-	// Show time-based meal reminders
+	// Show time-based meal reminders (only if enabled in settings)
 	useEffect(() => {
+		// Default to true if not set (for backwards compatibility)
+		if (userProfile.calorieReminderEnabled === false) return;
+
 		const now = new Date();
 		const currentHour = now.getHours();
 
@@ -195,7 +198,7 @@ export function DietConsistencyPanel() {
 			setReminderMealType('breakfast');
 			setShowReminderModal(true);
 		}
-	}, [todaysMeals]);
+	}, [todaysMeals, userProfile.calorieReminderEnabled]);
 
 	const openLogMealModal = (preselectedMealType?: MealType) => {
 		setMealDate(getLocalDateString());
