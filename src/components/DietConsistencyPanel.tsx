@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
 	Bar,
 	ComposedChart,
@@ -9,8 +9,10 @@ import {
 	YAxis,
 } from 'recharts';
 import { type DietEntry, useUserData } from '../hooks/useUserData';
+import { Button } from './Button';
 import { Highlight } from './Highlight';
 import { HighlightGroup } from './HighlightGroup';
+import { Modal } from './Modal';
 import { Panel } from './Panel';
 import {
 	getDaysForTimeRange,
@@ -135,9 +137,81 @@ function calculateDailyCalorieLimit(
 }
 
 export function DietConsistencyPanel() {
-	const { userProfile, statsEntries, dietEntries, isLoading } = useUserData();
+	const { userProfile, statsEntries, dietEntries, isLoading, addDietEntry } =
+		useUserData();
 
 	const [selectedRange, setSelectedRange] = useState<TimeRange>('1month');
+	const [showReminderModal, setShowReminderModal] = useState(false);
+	const [showLogMealModal, setShowLogMealModal] = useState(false);
+
+	// Log Meal state
+	const getLocalDateString = () => {
+		const now = new Date();
+		const year = now.getFullYear();
+		const month = String(now.getMonth() + 1).padStart(2, '0');
+		const day = String(now.getDate()).padStart(2, '0');
+		return `${year}-${month}-${day}`;
+	};
+
+	const [mealDate, setMealDate] = useState(getLocalDateString);
+	const [mealCalories, setMealCalories] = useState('');
+	const [mealType, setMealType] = useState<
+		'breakfast' | 'lunch' | 'dinner' | 'snack' | null
+	>(null);
+	const [caloriesError, setCaloriesError] = useState<string | null>(null);
+
+	// Calculate hours since last meal was logged
+	const hoursSinceLastMeal = useMemo(() => {
+		if (dietEntries.length === 0) return null;
+		const sortedEntries = [...dietEntries].sort(
+			(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+		);
+		const lastMealDate = new Date(sortedEntries[0].date);
+		// Set to end of day since we only have date, not time
+		lastMealDate.setHours(23, 59, 59, 999);
+		const now = new Date();
+		const diffTime = now.getTime() - lastMealDate.getTime();
+		const diffHours = diffTime / (1000 * 60 * 60);
+		return diffHours;
+	}, [dietEntries]);
+
+	// Show reminder if no meal logged in 24 hours
+	useEffect(() => {
+		if (hoursSinceLastMeal !== null && hoursSinceLastMeal > 24) {
+			setShowReminderModal(true);
+		}
+	}, [hoursSinceLastMeal]);
+
+	const openLogMealModal = () => {
+		setMealDate(getLocalDateString());
+		setMealCalories('');
+		setMealType(null);
+		setCaloriesError(null);
+		setShowLogMealModal(true);
+	};
+
+	const handleLogMeal = async () => {
+		setCaloriesError(null);
+
+		const calories = Number.parseInt(mealCalories, 10);
+		if (!mealCalories.trim()) {
+			setCaloriesError('Calories is required');
+			return;
+		}
+		if (Number.isNaN(calories) || calories <= 0) {
+			setCaloriesError('Calories must be a positive number');
+			return;
+		}
+
+		await addDietEntry({
+			id: crypto.randomUUID(),
+			date: mealDate,
+			calories,
+		});
+
+		setShowLogMealModal(false);
+		setShowReminderModal(false);
+	};
 
 	const selectedDays = useMemo(() => {
 		const days: DayData[] = [];
@@ -348,132 +422,250 @@ export function DietConsistencyPanel() {
 	}
 
 	return (
-		<Panel title="Diet Consistency" headerActions={timeRangeFilter}>
-			<HighlightGroup>
-				<Highlight
-					value={`${calorieData.dailyLimit} kcal`}
-					label="Daily limit"
-				/>
-				<Highlight
-					value={`${Math.abs(calorieData.deficit)} kcal`}
-					label={`Daily ${calorieData.deficit >= 0 ? 'deficit' : 'surplus'}`}
-				/>
-				<Highlight
-					value={`${streaks.currentStreak} days`}
-					label="Current Streak"
-				/>
-				<Highlight
-					value={`${streaks.longestStreak} days`}
-					label="Longest Streak"
-				/>
-			</HighlightGroup>
+		<>
+			<Modal
+				isOpen={showReminderModal}
+				onClose={() => setShowReminderModal(false)}
+				title="Time to Log Your Meals"
+				primaryAction={{
+					label: 'Log Meal',
+					onClick: openLogMealModal,
+				}}
+				secondaryAction={{
+					label: 'Skip',
+					onClick: () => setShowReminderModal(false),
+				}}
+			>
+				<p>
+					It has been more than 24 hours since your last meal was logged.
+					Tracking your calorie intake consistently helps you reach your fitness
+					goals.
+				</p>
+			</Modal>
 
-			<div className="mt-4 flex flex-wrap gap-3 text-xs">
-				<div className="flex items-center gap-1">
-					<div className="w-3 h-3 rounded bg-green-500" />
-					<span className="text-gray-400">Under limit</span>
+			<Modal
+				isOpen={showLogMealModal}
+				onClose={() => setShowLogMealModal(false)}
+				title="Log Meal"
+				primaryAction={{ label: 'Save', onClick: handleLogMeal }}
+				secondaryAction={{
+					label: 'Cancel',
+					onClick: () => setShowLogMealModal(false),
+				}}
+			>
+				<div className="space-y-4">
+					<div>
+						<span className="block text-sm font-medium text-gray-300 mb-2">
+							Meal Type
+						</span>
+						<div className="flex gap-2">
+							<Button
+								color="blue"
+								active={mealType === 'breakfast'}
+								onClick={() =>
+									setMealType(mealType === 'breakfast' ? null : 'breakfast')
+								}
+								className="flex-1"
+							>
+								Breakfast
+							</Button>
+							<Button
+								color="blue"
+								active={mealType === 'lunch'}
+								onClick={() =>
+									setMealType(mealType === 'lunch' ? null : 'lunch')
+								}
+								className="flex-1"
+							>
+								Lunch
+							</Button>
+							<Button
+								color="blue"
+								active={mealType === 'dinner'}
+								onClick={() =>
+									setMealType(mealType === 'dinner' ? null : 'dinner')
+								}
+								className="flex-1"
+							>
+								Dinner
+							</Button>
+							<Button
+								color="blue"
+								active={mealType === 'snack'}
+								onClick={() =>
+									setMealType(mealType === 'snack' ? null : 'snack')
+								}
+								className="flex-1"
+							>
+								Snack
+							</Button>
+						</div>
+					</div>
+					<div>
+						<label
+							htmlFor="diet-panel-meal-date"
+							className="block text-sm font-medium text-gray-300 mb-1"
+						>
+							Date
+						</label>
+						<input
+							id="diet-panel-meal-date"
+							type="date"
+							value={mealDate}
+							onChange={(e) => setMealDate(e.target.value)}
+							className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+						/>
+					</div>
+					<div>
+						<label
+							htmlFor="diet-panel-meal-calories"
+							className="block text-sm font-medium text-gray-300 mb-1"
+						>
+							Total Calories (kcal)
+						</label>
+						<input
+							id="diet-panel-meal-calories"
+							type="number"
+							value={mealCalories}
+							onChange={(e) => setMealCalories(e.target.value)}
+							placeholder="e.g. 2000"
+							min="0"
+							className={`w-full px-3 py-2 bg-gray-800 border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${caloriesError ? 'border-red-500' : 'border-gray-700'}`}
+						/>
+						{caloriesError && (
+							<p className="text-red-500 text-sm mt-1">{caloriesError}</p>
+						)}
+					</div>
 				</div>
-				<div className="flex items-center gap-1">
-					<div className="w-3 h-3 rounded bg-red-500" />
-					<span className="text-gray-400">Over limit</span>
-				</div>
-				<div className="flex items-center gap-1">
-					<div className="w-3 h-3 rounded bg-purple-500" />
-					<span className="text-gray-400">Today</span>
-				</div>
-				<div className="flex items-center gap-1">
-					<div className="w-6 border-t-2 border-dashed border-yellow-500" />
-					<span className="text-gray-400">Daily limit</span>
-				</div>
-			</div>
+			</Modal>
 
-			<div className="h-80 min-w-0 w-full mt-4">
-				<ResponsiveContainer width="100%" height="100%">
-					<ComposedChart
-						data={calorieData.chartData}
-						margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-					>
-						<XAxis
-							dataKey="dayLabel"
-							tick={{ fill: '#9ca3af', fontSize: 11 }}
-							tickLine={{ stroke: '#4b5563' }}
-							axisLine={{ stroke: '#4b5563' }}
-							interval={calorieData.chartData.length > 15 ? 2 : 0}
-						/>
-						<YAxis
-							tick={{ fill: '#9ca3af', fontSize: 12 }}
-							tickLine={{ stroke: '#4b5563' }}
-							axisLine={{ stroke: '#4b5563' }}
-							label={{
-								value: 'kcal',
-								angle: -90,
-								position: 'insideLeft',
-								fill: '#9ca3af',
-								fontSize: 12,
-							}}
-						/>
-						<Tooltip
-							content={<CustomTooltip dailyLimit={calorieData.dailyLimit} />}
-						/>
-						<ReferenceLine
-							y={calorieData.dailyLimit}
-							stroke="#eab308"
-							strokeDasharray="5 5"
-							strokeWidth={2}
-							label={{
-								value: 'Limit',
-								position: 'right',
-								fill: '#eab308',
-								fontSize: 12,
-							}}
-						/>
-						<Bar
-							dataKey="calories"
-							name="Calories"
-							radius={[4, 4, 0, 0]}
-							fill="#6b7280"
-							// Dynamic fill based on over/under limit
-							// biome-ignore lint/suspicious/noExplicitAny: recharts types
-							shape={(props: any) => {
-								const { x, y, width, height, payload } = props;
-								if (payload.calories === null) {
-									// No data - show thin gray bar
+			<Panel title="Diet Consistency" headerActions={timeRangeFilter}>
+				<HighlightGroup>
+					<Highlight
+						value={`${calorieData.dailyLimit} kcal`}
+						label="Daily limit"
+					/>
+					<Highlight
+						value={`${Math.abs(calorieData.deficit)} kcal`}
+						label={`Daily ${calorieData.deficit >= 0 ? 'deficit' : 'surplus'}`}
+					/>
+					<Highlight
+						value={`${streaks.currentStreak} days`}
+						label="Current Streak"
+					/>
+					<Highlight
+						value={`${streaks.longestStreak} days`}
+						label="Longest Streak"
+					/>
+				</HighlightGroup>
+
+				<div className="mt-4 flex flex-wrap gap-3 text-xs">
+					<div className="flex items-center gap-1">
+						<div className="w-3 h-3 rounded bg-green-500" />
+						<span className="text-gray-400">Under limit</span>
+					</div>
+					<div className="flex items-center gap-1">
+						<div className="w-3 h-3 rounded bg-red-500" />
+						<span className="text-gray-400">Over limit</span>
+					</div>
+					<div className="flex items-center gap-1">
+						<div className="w-3 h-3 rounded bg-purple-500" />
+						<span className="text-gray-400">Today</span>
+					</div>
+					<div className="flex items-center gap-1">
+						<div className="w-6 border-t-2 border-dashed border-yellow-500" />
+						<span className="text-gray-400">Daily limit</span>
+					</div>
+				</div>
+
+				<div className="h-80 min-w-0 w-full mt-4">
+					<ResponsiveContainer width="100%" height="100%">
+						<ComposedChart
+							data={calorieData.chartData}
+							margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+						>
+							<XAxis
+								dataKey="dayLabel"
+								tick={{ fill: '#9ca3af', fontSize: 11 }}
+								tickLine={{ stroke: '#4b5563' }}
+								axisLine={{ stroke: '#4b5563' }}
+								interval={calorieData.chartData.length > 15 ? 2 : 0}
+							/>
+							<YAxis
+								tick={{ fill: '#9ca3af', fontSize: 12 }}
+								tickLine={{ stroke: '#4b5563' }}
+								axisLine={{ stroke: '#4b5563' }}
+								label={{
+									value: 'kcal',
+									angle: -90,
+									position: 'insideLeft',
+									fill: '#9ca3af',
+									fontSize: 12,
+								}}
+							/>
+							<Tooltip
+								content={<CustomTooltip dailyLimit={calorieData.dailyLimit} />}
+							/>
+							<ReferenceLine
+								y={calorieData.dailyLimit}
+								stroke="#eab308"
+								strokeDasharray="5 5"
+								strokeWidth={2}
+								label={{
+									value: 'Limit',
+									position: 'right',
+									fill: '#eab308',
+									fontSize: 12,
+								}}
+							/>
+							<Bar
+								dataKey="calories"
+								name="Calories"
+								radius={[4, 4, 0, 0]}
+								fill="#6b7280"
+								// Dynamic fill based on over/under limit
+								// biome-ignore lint/suspicious/noExplicitAny: recharts types
+								shape={(props: any) => {
+									const { x, y, width, height, payload } = props;
+									if (payload.calories === null) {
+										// No data - show thin gray bar
+										return (
+											<rect
+												x={x}
+												y={y + height - 2}
+												width={width}
+												height={2}
+												fill="#374151"
+												rx={1}
+												ry={1}
+											/>
+										);
+									}
+									let fill: string;
+									if (payload.isToday) {
+										fill = '#a855f7'; // purple-500
+									} else if (payload.isOverLimit) {
+										fill = '#ef4444'; // red-500
+									} else {
+										fill = '#22c55e'; // green-500
+									}
 									return (
 										<rect
 											x={x}
-											y={y + height - 2}
+											y={y}
 											width={width}
-											height={2}
-											fill="#374151"
-											rx={1}
-											ry={1}
+											height={height}
+											fill={fill}
+											rx={4}
+											ry={4}
 										/>
 									);
-								}
-								let fill: string;
-								if (payload.isToday) {
-									fill = '#a855f7'; // purple-500
-								} else if (payload.isOverLimit) {
-									fill = '#ef4444'; // red-500
-								} else {
-									fill = '#22c55e'; // green-500
-								}
-								return (
-									<rect
-										x={x}
-										y={y}
-										width={width}
-										height={height}
-										fill={fill}
-										rx={4}
-										ry={4}
-									/>
-								);
-							}}
-						/>
-					</ComposedChart>
-				</ResponsiveContainer>
-			</div>
-		</Panel>
+								}}
+							/>
+						</ComposedChart>
+					</ResponsiveContainer>
+				</div>
+			</Panel>
+		</>
 	);
 }
