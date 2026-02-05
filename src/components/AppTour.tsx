@@ -35,6 +35,12 @@ const tourSteps: Step[] = [
 		placement: 'bottom',
 	},
 	{
+		target: '[data-tour="log-link"]',
+		content:
+			'View your complete activity log here. Browse all your past workouts, weight entries, and meals in one place.',
+		placement: 'bottom',
+	},
+	{
 		target: '[data-tour="todays-training"]',
 		content:
 			"This panel shows today's training session based on your schedule. When you're ready, click 'Start Training' to begin!",
