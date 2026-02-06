@@ -156,7 +156,7 @@ export function Navbar() {
 						<Link to="/" className="flex items-center gap-2">
 							<span className="text-2xl">💪</span>
 							<span className="text-lg md:text-xl font-bold text-white">
-								Personal Trainer
+								PT
 							</span>
 						</Link>
 						<div className="flex items-center gap-4">

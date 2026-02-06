@@ -35,9 +35,35 @@ interface ChartDataPoint {
 	dayLabel: string;
 	date: Date;
 	calories: number | null;
+	breakfastCalories: number;
+	lunchCalories: number;
+	dinnerCalories: number;
+	snackCalories: number;
 	isOverLimit: boolean;
 	isToday: boolean;
 }
+
+// Color shades for meal types - different shades based on under/over limit and today
+const MEAL_COLORS = {
+	underLimit: {
+		breakfast: '#86efac', // green-300
+		lunch: '#4ade80', // green-400
+		dinner: '#22c55e', // green-500
+		snack: '#16a34a', // green-600
+	},
+	overLimit: {
+		breakfast: '#fca5a5', // red-300
+		lunch: '#f87171', // red-400
+		dinner: '#ef4444', // red-500
+		snack: '#dc2626', // red-600
+	},
+	today: {
+		breakfast: '#d8b4fe', // purple-300
+		lunch: '#c084fc', // purple-400
+		dinner: '#a855f7', // purple-500
+		snack: '#9333ea', // purple-600
+	},
+};
 
 interface CustomTooltipProps {
 	active?: boolean;
@@ -65,15 +91,33 @@ function CustomTooltip({ active, payload, dailyLimit }: CustomTooltipProps) {
 			</p>
 			{hasData ? (
 				<>
-					<p className="text-white">
-						Calories:{' '}
+					<p className="text-white mb-2">
+						Total:{' '}
 						<span
 							className={`font-semibold ${data.isOverLimit ? 'text-red-400' : 'text-green-400'}`}
 						>
 							{data.calories} kcal
 						</span>
 					</p>
-					<p className="text-xs text-gray-400 mt-1">
+					<div className="text-sm space-y-1">
+						{data.breakfastCalories > 0 && (
+							<p className="text-gray-300">
+								Breakfast: {data.breakfastCalories} kcal
+							</p>
+						)}
+						{data.lunchCalories > 0 && (
+							<p className="text-gray-300">Lunch: {data.lunchCalories} kcal</p>
+						)}
+						{data.dinnerCalories > 0 && (
+							<p className="text-gray-300">
+								Dinner: {data.dinnerCalories} kcal
+							</p>
+						)}
+						{data.snackCalories > 0 && (
+							<p className="text-gray-300">Snacks: {data.snackCalories} kcal</p>
+						)}
+					</div>
+					<p className="text-xs text-gray-400 mt-2">
 						{data.isOverLimit
 							? `🔴 ${(data.calories ?? 0) - dailyLimit} kcal over limit`
 							: `✅ ${dailyLimit - (data.calories ?? 0)} kcal under limit`}
@@ -292,14 +336,38 @@ export function DietConsistencyPanel() {
 
 	// Create a map of aggregated calories by date (supports multiple entries per day)
 	const dietEntriesMap = useMemo(() => {
-		const map = new Map<string, { calories: number }>();
-		for (const entry of allDietEntries) {
-			const existing = map.get(entry.date);
-			if (existing) {
-				existing.calories += entry.calories;
-			} else {
-				map.set(entry.date, { calories: entry.calories });
+		const map = new Map<
+			string,
+			{
+				calories: number;
+				breakfast: number;
+				lunch: number;
+				dinner: number;
+				snack: number;
 			}
+		>();
+		for (const entry of allDietEntries) {
+			const existing = map.get(entry.date) || {
+				calories: 0,
+				breakfast: 0,
+				lunch: 0,
+				dinner: 0,
+				snack: 0,
+			};
+			existing.calories += entry.calories;
+			if (entry.mealType === 'breakfast') {
+				existing.breakfast += entry.calories;
+			} else if (entry.mealType === 'lunch') {
+				existing.lunch += entry.calories;
+			} else if (entry.mealType === 'dinner') {
+				existing.dinner += entry.calories;
+			} else if (entry.mealType === 'snack') {
+				existing.snack += entry.calories;
+			} else {
+				// No meal type specified - add to snack as default
+				existing.snack += entry.calories;
+			}
+			map.set(entry.date, existing);
 		}
 		return map;
 	}, [allDietEntries]);
@@ -439,6 +507,10 @@ export function DietConsistencyPanel() {
 				dayLabel: `${day.date.getDate()}`,
 				date: day.date,
 				calories,
+				breakfastCalories: dietEntry?.breakfast ?? 0,
+				lunchCalories: dietEntry?.lunch ?? 0,
+				dinnerCalories: dietEntry?.dinner ?? 0,
+				snackCalories: dietEntry?.snack ?? 0,
 				isOverLimit: calories !== null && calories > dailyLimit,
 				isToday: day.dateStr === todayStr,
 			};
@@ -685,20 +757,107 @@ export function DietConsistencyPanel() {
 								}}
 							/>
 							<Bar
-								dataKey="calories"
-								name="Calories"
-								radius={[4, 4, 0, 0]}
-								fill="#6b7280"
-								// Dynamic fill based on over/under limit
+								dataKey="breakfastCalories"
+								name="Breakfast"
+								stackId="calories"
 								// biome-ignore lint/suspicious/noExplicitAny: recharts types
 								shape={(props: any) => {
 									const { x, y, width, height, payload } = props;
+									if (!height || height <= 0) return null;
+									const colorSet = payload.isToday
+										? MEAL_COLORS.today
+										: payload.isOverLimit
+											? MEAL_COLORS.overLimit
+											: MEAL_COLORS.underLimit;
+									// Round top corners if this is the topmost bar
+									const isTopmost =
+										payload.lunchCalories === 0 &&
+										payload.dinnerCalories === 0 &&
+										payload.snackCalories === 0;
+									return (
+										<rect
+											x={x}
+											y={y}
+											width={width}
+											height={height}
+											fill={colorSet.breakfast}
+											rx={isTopmost ? 4 : 0}
+											ry={isTopmost ? 4 : 0}
+										/>
+									);
+								}}
+							/>
+							<Bar
+								dataKey="lunchCalories"
+								name="Lunch"
+								stackId="calories"
+								// biome-ignore lint/suspicious/noExplicitAny: recharts types
+								shape={(props: any) => {
+									const { x, y, width, height, payload } = props;
+									if (!height || height <= 0) return null;
+									const colorSet = payload.isToday
+										? MEAL_COLORS.today
+										: payload.isOverLimit
+											? MEAL_COLORS.overLimit
+											: MEAL_COLORS.underLimit;
+									// Round top corners if this is the topmost bar
+									const isTopmost =
+										payload.dinnerCalories === 0 && payload.snackCalories === 0;
+									return (
+										<rect
+											x={x}
+											y={y}
+											width={width}
+											height={height}
+											fill={colorSet.lunch}
+											rx={isTopmost ? 4 : 0}
+											ry={isTopmost ? 4 : 0}
+										/>
+									);
+								}}
+							/>
+							<Bar
+								dataKey="dinnerCalories"
+								name="Dinner"
+								stackId="calories"
+								// biome-ignore lint/suspicious/noExplicitAny: recharts types
+								shape={(props: any) => {
+									const { x, y, width, height, payload } = props;
+									if (!height || height <= 0) return null;
+									const colorSet = payload.isToday
+										? MEAL_COLORS.today
+										: payload.isOverLimit
+											? MEAL_COLORS.overLimit
+											: MEAL_COLORS.underLimit;
+									// Round top corners if this is the topmost bar
+									const isTopmost = payload.snackCalories === 0;
+									return (
+										<rect
+											x={x}
+											y={y}
+											width={width}
+											height={height}
+											fill={colorSet.dinner}
+											rx={isTopmost ? 4 : 0}
+											ry={isTopmost ? 4 : 0}
+										/>
+									);
+								}}
+							/>
+							<Bar
+								dataKey="snackCalories"
+								name="Snacks"
+								stackId="calories"
+								radius={[4, 4, 0, 0]}
+								// biome-ignore lint/suspicious/noExplicitAny: recharts types
+								shape={(props: any) => {
+									const { x, y, width, height, payload } = props;
+									// Show thin gray bar when no data at all
 									if (payload.calories === null) {
-										// No data - show thin gray bar
 										return (
 											<rect
 												x={x}
-												y={y + height - 2}
+												y={y + (height || 0) - 2}
 												width={width}
 												height={2}
 												fill="#374151"
@@ -707,21 +866,19 @@ export function DietConsistencyPanel() {
 											/>
 										);
 									}
-									let fill: string;
-									if (payload.isToday) {
-										fill = '#a855f7'; // purple-500
-									} else if (payload.isOverLimit) {
-										fill = '#ef4444'; // red-500
-									} else {
-										fill = '#22c55e'; // green-500
-									}
+									if (!height || height <= 0) return null;
+									const colorSet = payload.isToday
+										? MEAL_COLORS.today
+										: payload.isOverLimit
+											? MEAL_COLORS.overLimit
+											: MEAL_COLORS.underLimit;
 									return (
 										<rect
 											x={x}
 											y={y}
 											width={width}
 											height={height}
-											fill={fill}
+											fill={colorSet.snack}
 											rx={4}
 											ry={4}
 										/>

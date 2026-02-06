@@ -1,7 +1,7 @@
 export function Copyright() {
 	const year = new Date().getFullYear();
 	return (
-		<footer className="py-6 text-center text-sm text-gray-500 bg-gray-950 space-y-4 px-4">
+		<footer className="py-6 text-center text-sm text-gray-500 bg-gray-950 space-y-4 px-4 mb-50">
 			<p>&copy; {year} Personal Trainer. All rights reserved.</p>
 			<p className="text-xs text-gray-600 max-w-7xl mx-auto">
 				<strong>Health & Fitness Disclaimer:</strong> The exercise routines,
