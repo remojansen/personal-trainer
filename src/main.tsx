@@ -1,7 +1,7 @@
 import { registerSW } from 'virtual:pwa-register';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import { UserDataProvider } from './hooks/useUserData';
 import './index.css';
 import App from './App.tsx';
@@ -24,11 +24,11 @@ const root = document.getElementById('root');
 if (root) {
 	createRoot(root).render(
 		<StrictMode>
-			<BrowserRouter basename={import.meta.env.BASE_URL}>
+			<HashRouter>
 				<UserDataProvider>
 					<App />
 				</UserDataProvider>
-			</BrowserRouter>
+			</HashRouter>
 		</StrictMode>,
 	);
 }
